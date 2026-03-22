@@ -149,3 +149,72 @@ f1-strategy-optimizer/
 └── GETTING_STARTED.md          ← full step-by-step setup guide
 
 ```
+
+
+## Quickstart
+1. Clone the repository
+
+```
+git clone https://github.com/YOUR_USERNAME/f1-strategy-optimizer.git
+cd f1-strategy-optimizer
+```
+
+2. Create and activate virtual environment
+```
+python -m venv venv
+source venv/bin/activate        # Mac/Linux
+# venv\Scripts\activate         # Windows
+```
+
+3. Install dependencies
+```
+pip install -r requirements.txt
+```
+
+4. Fetch real F1 data
+```
+python3 src/data/fetch_data.py
+```
+⏳ Takes 5–15 minutes on first run. Cached after that
+
+5. Run Feature engineering
+```
+python3 src/data/feature_engineering.py
+```
+
+6. Train the model 
+```
+python3 src/models/train_xgboost.py
+```
+
+7. View experiment results in MLflow
+```
+mlflow ui
+```
+
+## Model Performance (Phase 1 - XGBoost)
+
+
+## Roadmap 
+
+Phase 1 - Data pipeline + XGBoost pit stop classifier
+Phase 2 - PyTorch LSTM tyre degradation forecaster
+Phase 3 - Strategy engine (combines both models)
+Phase 4 - FastAPI backend + Streamlit frontend + Docker deployement
+
+## 🧠 Key Concepts Used
+Why XGBoost for Phase 1?
+- On tabular data (rows and columns), gradient boosted trees consistently outperform neural networks. XGBoost is the go-to-go choice for structured data in industry and Kaggle competitions alike
+
+Why LSTM for Phase 2?
+- Tyre degradation is a time series problem, each lap depends on the laps before it. LSTMs (Long Short-Term Memory networks) are specifically designed to learn patterns in sequences, making them ideal for forecasting lap time evolution over a stint.
+
+Why split by race, not randomly?
+- Random splits would leak information, the model could memorise patterns from the same race it's being tested on. Splitting by race means the model is tested on circuits and conditions it has genuinely never seen.
+
+Why MLflow?
+- Eveey training run logs its parameters, metrics, and model artifact automatically. This means eperiments are reproducible, comparable, and auditable.
+
+
+### Author 
+#### Hiruni Liyanage
