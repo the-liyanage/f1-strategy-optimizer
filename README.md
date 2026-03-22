@@ -196,11 +196,14 @@ mlflow ui
 
 
 ## Roadmap 
-
+ ```
 Phase 1 - Data pipeline + XGBoost pit stop classifier
 Phase 2 - PyTorch LSTM tyre degradation forecaster
 Phase 3 - Strategy engine (combines both models)
 Phase 4 - FastAPI backend + Streamlit frontend + Docker deployement
+
+```
+
 
 ## 🧠 Key Concepts Used
 Why XGBoost for Phase 1?
@@ -214,6 +217,14 @@ Why split by race, not randomly?
 
 Why MLflow?
 - Eveey training run logs its parameters, metrics, and model artifact automatically. This means eperiments are reproducible, comparable, and auditable.
+
+
+
+
+
+
+
+
 
 
 ### Author 
