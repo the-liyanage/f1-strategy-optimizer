@@ -1,1 +1,31 @@
-# Run all services together 
+services:
+
+  # Serivice 1: Training job
+  # Runs the XGBoost training script inside a container
+  train:
+    build:
+      context: ..                    # build from project root (where Dockerfile is)
+      dockerfile: docker/Dockerfile 
+    command: python src/models/train_xgboost.py   # the script to run
+    volumes:
+      - ..:/app                      # mount entire project so all files are available 
+    environment:
+      - PYTHONUNBUFFERED=1           # print logs immediately, not buffered
+      - PYTHONPATH=/app              # so python can find src/, config.py etc
+    working_dir: /app 
+
+  # Service 2: Run tests
+  # Runs all unit tests using pytest
+  test:
+    build: .
+    command: pytest tests/ -v
+    volumes:
+      - ./tests:/app/tests
+      - ./src:/app/src
+
+  # Service 3: Interactive dev shell
+  dev:
+    build: .
+    command: bash
+    stdin_open: true
+    tty: true
