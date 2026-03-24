@@ -6,6 +6,8 @@ Phase 1: Fetch real F1 data using FastF1
 import sys
 from pathlib import Path
 
+
+
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 import fastf1
@@ -19,3 +21,6 @@ from config import (
     LOG_FORMAT,
     LOG_LEVEL,
 )
+
+logging.basicConfig(level=LOG_LEVEL, format=LOG_FORMAT, force = True)
+logger = logging.fetLogger(__name__)
