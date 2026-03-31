@@ -15,7 +15,7 @@ It then combines both answers into a strategy engine that recommends the optimal
 
 
 ## Why This Problem?
-- Real F1 teams (Mercedes, Ferrari, Red Bull) spen millions solving this exact problem.
+- Real F1 teams (Mercedes, Ferrari, Red Bull) spend millions solving this exact problem.
 - It combines classical ML + deep learning in one project
 - The data is real, free and publicly available via FastF1
 - It has a clear, explainable output: *Pit Hamilton on lap 28, switch to Medium*
