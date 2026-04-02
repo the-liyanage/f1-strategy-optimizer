@@ -9,6 +9,10 @@ __pycache__/
 # macOS system files
 .DS_Store 
 
+# Cache files
+data/raw/cache/
+*.sqlite
+
 # Distribution / packaging
 .Python
 build/
