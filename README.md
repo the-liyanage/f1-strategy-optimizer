@@ -7,9 +7,9 @@ In Formula 1, pit stop timing is one of the most important strategic decisions a
 
 
 This project builds an ML system that answers two questions:
-1. Should this driver pit this lap? (XGBoost classifier)
+1. Should this driver pit this lap? (XGBoost classifier) (working on this currently)
 
-2. How will this tyre degrade over the next 10 laps (PyTorch LSTM)
+2. How will this tyre degrade over the next 10 laps (PyTorch LSTM) 
 
 It then combines both answers into a strategy engine that recommends the optimal pit window and tyre compound - and serves those recommendations through a live web app.
 
