@@ -67,7 +67,6 @@ Layer                 Tool                        Why
 Data                  FastF1                      Free official F1 telemetry API
 Data manipulation     Pandas, Numpy               Industry standard for tabular data
 Classical ML          XGBoost                     Best-in-class for tabular data
-Deep Learning         PyTorch                     Most widely used DL framework in research + Industry
 Experiment Tracking   MLflow                      Tracks every experiment, params, and metrics
 API Backend           FastAPI                     Fast, modern Python API framework
 Frontend              Streamlit                   Fastest way to build ML web apps in Python
@@ -152,13 +151,56 @@ mlflow ui
 
 ## Model Comparison
 
-Trained on 8 races, tested on 2 completely unseen races (Singapore + Monza),
-chosen specifically for having different track characteristics than the
-training set:
+```
+Trained on 8 races, tested on 2 completely unseen races (Singapore + Monza), chosen specifically for having different track characteristics than the training set:
 
-ModelROC-AUCF1 (pit class)Precision (pit)Recall (pit)Baseline (tyre age rule)0.600.090.050.48Logistic Regression0.830.200.120.51XGBoostin progress
+Model                       ROC-AUC         F1 (pit class)    Precision(pit)      Recall(pit)
+-------------------------------------------------------------------------------------------------------
+
+Baseline (tyre age rule)     0.60            0.09              0.05                 0.48
+Logistic Regression          0.83            0.20              0.12                 0.51
+XGBoostin                                progress
 
 
+Class imbalance: only ~3% of laps in the dataset are actual pit stops
+(~33:1 ratio), handled via class_weight='balanced' (Logistic Regression) and
+scale_pos_weight (XGBoost).
+```
+
+
+
+Roadmap
+
+ - EDA — explored real race data, found and characterized class imbalance
+ - Feature engineering — tyre degradation, race context, leakage fixes
+ - Baseline — simple rule-based comparison point
+ - Logistic Regression — linear model comparison
+ - XGBoost — primary model (final validation in progress)
+ - Convert notebooks to production scripts (src/)
+ - Strategy engine — turn predictions into readable recommendations
+ - FastAPI backend
+ - Streamlit frontend
+ - Docker deployment
+
+
+Planned for v2 (after v1 ships):
+- PyTorch LSTM for tyre degradation forecasting
+- Combine LSTM + XGBoost outputs in the strategy engine
+
+-------------------------------------------------------------------------------------------------------
+
+
+Key Concepts Applied
+
+Why split by race, not randomly?
+Laps from the same race share context(track temperature, safety car periods, circuit characteristics). A random split would leak that context between train and test, making results look better than they really are. Splitting by entire race gives an honest test of generalization to genuinely unseen conditions.
+
+Why compare three models instead of jumping to XGBoost? 
+Establishing a baseline and a linear model first proves whether added model complexity is actually earning its place, rather than assuming a more powerful model is automatically better.
+
+Why scale features for Logistic Regression but not XGBoost? 
+Logistic Regression's gradient-based optimization is sensitive to feature scale;
+tree-based models like XGBoost split on raw thresholds and are unaffected by scale, so scaling there would add complexity with no benefit.
 
 
 
