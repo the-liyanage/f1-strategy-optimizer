@@ -158,9 +158,9 @@ Model                       ROC-AUC         F1 (pit class)    Precision(pit)    
 -------------------------------------------------------------------------------------------------------
 
 Baseline (tyre age rule)     0.60            0.09              0.05                 0.48
-Logistic Regression          0.83            0.20              0.12                 0.51
-XGBoostin                                progress
-
+Logistic Regression          0.84            0.21              0.13                 0.51
+XGBoostin                    0.78            0.08              0.08                 0.08
+   
 
 Class imbalance: only ~3% of laps in the dataset are actual pit stops
 (~33:1 ratio), handled via class_weight='balanced' (Logistic Regression) and
