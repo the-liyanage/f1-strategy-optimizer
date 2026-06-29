@@ -158,7 +158,7 @@ Model                       ROC-AUC         F1 (pit class)    Precision(pit)    
 -------------------------------------------------------------------------------------------------------
 
 Baseline (tyre age rule)     0.60            0.09              0.05                 0.48
-Logistic Regression          0.83            0.20              0.12                 0.51
+Logistic Regression          0.84            0.21              0.13                 0.51
 XGBoostin                                progress
 
 
