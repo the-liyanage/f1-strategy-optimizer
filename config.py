@@ -103,7 +103,7 @@ MLFLOW_EXPERIMENT_XGBOOST = "f1_pitstop_xgboost"
 
 
 # LSTM MODEL (Phase 2)
-
+"""
 LSTM_SEQUENCE_LENGTH = 10      # How many past laps the LSTM looks at
 LSTM_FORECAST_HORIZON = 5      # How many future laps it predicts
 LSTM_HIDDEN_SIZE = 64
@@ -114,7 +114,7 @@ LSTM_EPOCHS = 50
 LSTM_LEARNING_RATE = 0.001
  
 MLFLOW_EXPERIMENT_LSTM = "f1_tyre_degradation_lstm"
-
+"""
 
 # API (Phase 4)
 
