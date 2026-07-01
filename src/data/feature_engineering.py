@@ -354,6 +354,17 @@ def build_logreg_features(df: pd.DataFrame) -> pd.DataFrame:
         .columns.tolist()
     )
 
+    # IsLateRace is a binary flag, not scaled
+    numeric_feature_cols = [c for c in numeric_feature_cols if c!= "IsLateRace"]
+
+    scaler = StandardScaler()
+    df_logreg[numeric_feature_cols] = scaler.fit_transform(df_logreg[numeric_feature_cols])
+
+
+
+    logger.info(f"Logistic Regression feature set: {len(numeric_feature_cols)} scaled columns")
+
+    return df_logreg
 
 
 
@@ -379,7 +390,17 @@ def run_feature_engineering(save: bool = True):
     df_logreg = build_logreg_features(df)
     
 
+    if save:
+        FEATURES_CSV.parent.mkdir(parents = True, exist_ok= True)
+        df_xgb.to_csv(FEATURES_CSV, index = False)
 
+
+        scaled_path = FEATURES_CSV.parent / "features_2023_scaled.csv"
+        df_logreg.to_csv(scaled_path, index= False)
+
+
+        logger.info(f"Saved XGBoost features --> {FEATURES_CSV} ({df_xgb.shape})")
+        logger.info(f"Saved Logistic Regression features --> {scaled_path} ({df_logreg.shape})")
 
 
 
