@@ -109,7 +109,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.DataFrame) -> xgb.XGBClassifi
         max_depth = 6, # how deep each tree can grow
         learning_rate = 0.05, # how much each tree corrects previous mistakes
         subsample = 0.8, # % of rows used per tree (reduce overfitting)
-        colsample_by_tree = 0.8, # % of features used per tree (reduce overfitting)
+        colsample_bytree = 0.8, # % of features used per tree (reduce overfitting)
         eval_metric = "auc",
         random_state = 42, #reproducibility 
         n_jobs = -1, #use all available CPU cores
@@ -120,10 +120,62 @@ def train_model(X_train: pd.DataFrame, y_train: pd.DataFrame) -> xgb.XGBClassifi
     model.fit(X_train, y_train)
     logger.info("Training complete!")
     return model
-    
 
 
 
+
+def evaluate_model(model: xgb.XGBClassifier, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
+    """
+    Evaluate on held out races, return key metrics
+    """ 
+
+    y_pred = model.predict(X_test)
+    y_pred_proba = model.predict_proba(X_test)[:,1]
+
+
+    report = classification_report(y_test, y_pred, output_dict=True)
+    auc = roc_auc_score(y_test, y_pred_proba)
+
+
+
+    metrics = {
+        "roc_auc" : auc,
+        "precision_pit": report["1"]["precision"],
+        "recall_pit": report["1"]["recall"],
+        "f1_pit": report["1"]["f1-score"],
+    }
+
+
+    logger.info("Evaluation Results (Singapore + Monza, unseen):")
+    logger.info(f"  ROC-AUC:        {auc:.4f}")
+    logger.info(f"  Pit Precision:  {metrics['precision_pit']:.4f}")
+    logger.info(f"  Pit Recall:     {metrics['recall_pit']:.4f}")
+    logger.info(f"  Pit F1:         {metrics['f1_pit']:.4f}")
+ 
+    return metrics 
+
+
+def get_feature_importance(model: xgb.XGBClassifier, feature_cols: list) -> pd.DataFrame:
+    """Return features sorted by how much the model relied on them."""
+    importance = pd.DataFrame({
+        "Feature": feature_cols,
+        "Importance": model.feature_importances_,
+    }).sort_values("Importance", ascending=False)
+ 
+    logger.info("Top 5 most important features:")
+    for _, row in importance.head(5).iterrows():
+        logger.info(f"  {row['Feature']}: {row['Importance']:.4f}")
+ 
+    return importance
+
+def save_models(model: xgb.XGBClassifier, path: Path = XGBOOST_MODEL_PATH):
+    """
+    Persist the trained model to disk for later use by the API
+    """
+
+    path.parent.mkdir(parents=True, exist_ok= True)
+    joblib.dump(model, path)
+    logger.info(f"Model saved -> {path}")
 
 def run_training():
     """
@@ -138,7 +190,13 @@ def run_training():
     y_test = test_df["Pitted"]
 
 
+
     model = train_model(X_train, y_train)
+    metrics = evaluate_model(model, X_test, y_test)
+    importance = get_feature_importance(model, feature_cols)
+
+    save_models(model)
+    return model, metrics, importance
 
 if __name__ == "__main__":
     run_training()
