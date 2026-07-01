@@ -75,7 +75,7 @@ def convert_time_columns(df: pd.DataFrame) -> pd.DataFrame:
         if any(keyword in c for keyword in TIME_COL_KEYWORD)
     ]
     for col in time_cols:
-        df[col] = pd.to_timedelta(df[col], errors = "coerce").dt.total_secnds()
+        df[col] = pd.to_timedelta(df[col], errors = "coerce").dt.total_seconds()
     logger.info(f"Converted {len(time_cols)} time columns to seconds")
     return df
 
@@ -100,13 +100,41 @@ def fix_data_types(df: pd.DataFrame) -> pd.DataFrame:
             False: False,
             "True": True,
             "False": False,
-            None: pd.Na,
+            None: pd.NA,
             "nan": pd.NA,
                             })
         df[col] = df[col].astype("boolean")
 
     logger.info(f"Fixed dtypes for {len(numeric_as_categorical)} categorical"
-                f"and {len(bool_cols)} boolean columns")
+                f" and {len(bool_cols)} boolean columns")
+    return df
+
+
+def create_target_variable(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Create the pitted target ( 1 = pitted this lap, 0 = styaed out).
+    PitInTime/PitOutTime are dropped immediately after - the model must
+    never see them directly, only the extracted yes/no signal.
+
+    """
+
+    df["Pitted"] = df["PitInTime"].notna().astype(int)
+    pit_rate = df["Pitted"].mean()
+    logger.info(f"Created Pitted target. Pit rate: {pit_rate:.2%}")
+    return df
+
+def drop_missing_lap_time(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Drop rows with missing LapTime BEFORE calculating any degradation
+    features. This must happen before step 6, otherwise gaps in the lap 
+    sequence corrupt the groupby/diff/rolling calculations downstream.
+
+    """
+
+    before = len(df)
+    df = df.dropna(subset = ["LapTime"]).copy()
+    logger.info(f"Dropped {before - len(df)} rows with missing LapTime."
+                f" Remaining: {len(df)}")
     return df
 
 def run_feature_engineering(save: bool = True):
@@ -114,8 +142,14 @@ def run_feature_engineering(save: bool = True):
     df = drop_useless_columns(df)
     df = convert_time_columns(df)
     df = fix_data_types(df)
+    df = create_target_variable(df)
+    df = df.drop(columns = ["PitInTime", "PitOutTime"], errors= "ignore")
 
-    ...
+    # IMPORTANT: drop missing LapTime BEFORE any degradation calculations
+    df = drop_missing_lap_time(df)
+
+
+    
 
 
 
