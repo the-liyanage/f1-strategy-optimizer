@@ -73,6 +73,24 @@ TELEMETRY_COLS_TO_FIX =[
 
 
 
+# Columns never used as model features - identity/leakage/redundant
+EXCLUDE_FROM_FEATURES = [
+    "Pitted", "Driver", "RaceName", "Compound",
+    "IsAccurate", "FastF1Generated", "IsPersonalBest",
+    "TrackStatus", # leak 1 ---> drop entirely, never use
+    "PitInTime", "PitOutTime", # already encoded into Pitted, must not leak
+    "DriverNumber", "Team",
+]
+
+# Additonal columns only excluded for Logistic Regression (multicollinearity)
+LOGREG_ONLY_EXCLUDE = [
+    "Time", "LapStartTime",
+    "Sector1SessionTime", "Sector2SessionTIme", "Sector3SessionTime",
+    "LapNumber", # superseded by RacePctComplete
+    "LapTime", # superseded by LapTimeRolling3
+]
+
+
 def load_raw_laps(path: Path = LAPS_CSV) -> pd.DataFrame:
     """ load the cleaned lap data produced by fetch_data.py """
     logger.info(f"Loading raw laps from {path}")
@@ -103,7 +121,7 @@ def convert_time_columns(df: pd.DataFrame) -> pd.DataFrame:
 def fix_data_types(df: pd.DataFrame) -> pd.DataFrame:
     """ Fix categorical and boolean column types. """
 
-    numeric_as_categorical = ["DriverNumber", "Year", "Position", "TrackStatus"]
+    numeric_as_categorical = ["DriverNumber", "Year", "TrackStatus"]
     for col in numeric_as_categorical:
         if col in df.columns:
             df[col] = df[col].astype("category")
@@ -272,8 +290,75 @@ def add_race_context_features(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("Added race context features (RacePCtComplete, LapsRemaining, IsLateRace)")
     return df
 
+def handle_remaining_missing_values(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Fill any remaining missing valus: median for numeric, forward-fill for Position.
+
+    """
+
+    if "Position" in df.columns:
+        df["Position"] = df.groupby(["RaceName", "Driver"])["Position"].ffill()
+        df["Position"] = df["Position"].fillna(df["Position"].median())
+
+    numeric_cols = df.select_dtypes(include = [np.number]).columns
+    filled = []
+    for col in numeric_cols:
+        if df[col].isnull().sum() > 0:
+            median_val = df[col].median()
+            df[col] = df[col].fillna(median_val)
+            filled.append(col)
+
+
+    logger.info(f"Filled remaining missing values in: {filled}")
+    logger.info(f"Total missing values remaining: {df.isnull().sum().sum()}")
+    return df
+
+
+
+
+
+def build_xgboost_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    XGBoost doesn't need scaling or multicollinearity handling
+
+    """
+    feature_cols = [c for c in df.columns if c not in EXCLUDE_FROM_FEATURES]
+    logger.info(f"XGBoost feature set: {len(feature_cols)} columns")
+    return df[feature_cols + ["Pitted", "Driver", "RaceName"]]
+
+
+def build_logreg_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Logistic Regression needs multicollinearity removed and numeric
+    features scaled. Position is explicitly cast to float since it's stored
+    as category dtype upstream
+
+    """
+
+    df_logreg = df.drop(
+        columns = [ c for c in LOGREG_ONLY_EXCLUDE if c in df.columns],
+        errors = "ignore",
+    )
+
+    if "Position" in df_logreg.columns:
+        df_logreg["Position"] = df_logreg["Position"].astype(float)
+
+    feature_cols = [
+        c for c in df_logreg.columns
+        if c not in EXCLUDE_FROM_FEATURES
+    ]
+
+    numeric_feature_cols = (
+        df_logreg[feature_cols]
+        .select_dtypes(include = [np.number])
+        .columns.tolist()
+    )
+
+
+
+
 def run_feature_engineering(save: bool = True):
-    df = load_raw_laps()
+    df = load_raw_laps() 
     df = drop_useless_columns(df)
     df = convert_time_columns(df)
     df = fix_data_types(df)
@@ -288,6 +373,17 @@ def run_feature_engineering(save: bool = True):
     df = fix_telemetry_leakage(df)
     df = add_race_context_features(df)
 
+    df = handle_remaining_missing_values(df)
+
+    df_xgb = build_xgboost_features(df)
+    df_logreg = build_logreg_features(df)
+    
+
+
+
+
+
+    return df_xgb, df_logreg
 
 
 
