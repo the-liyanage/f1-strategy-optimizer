@@ -49,12 +49,37 @@ def load_features(path: Path = FEATURES_CSV) -> pd.DataFrame:
     logger.info(f"Loading features from {path}")
     df = pd.read_csv(path)
     logger.info(f"Loaded {len(df)} rows, {df.shape[1]} columns")
+    return df
+
+
+def split_by_race(df: pd.DataFrame):
+    """
+    Split into train/test by ENTIRE race, not randomly.
+
+    Why: laps from the same race share context (track temperature, safety car periods,
+    circuit characteristics). A random split would leak that shared context
+    between train and test. Making results look better than they really are. 
+    Splitting by whole rae gives an honest test of generalisation
+    unseen conditions.
+    
+    """
+
+    train_df = df[~df["RaceName"].isin(TEST_RACES)]
+    test_df = df[df["RaceName"].isin(TEST_RACES)]
+
+    logger.info(f"Train: {len(train_df)} laps from"
+                f" {train_df["RaceName"].nunique()} races")
+    logger.info(f"Test:  {len(test_df)} laps from {TEST_RACES}")
+
+    return train_df, test_df
+    
 
 def run_training():
     """
     full training pipeline
     """
     df = load_features()
+    train_df, test_df  = split_by_race(df)
 
 if __name__ == "__main__":
     run_training()
