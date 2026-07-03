@@ -11,17 +11,18 @@ Usage:
 """
 
 import logging
+# this is for system interaction like printing to the terminal
 import sys
+# for clean cross-platform file path management
 from pathlib import Path
 from datetime import datetime
 
 # Add project root to path so config can be found 
 sys.path.append(str(Path(__file__).parent.parent))
-from config import LOG_FORMAT, LOG_LEVEL
+from config import LOG_FORMAT, LOG_LEVEL, LOGS_DIR
 
 
 # create logs directory if it doesn't exist 
-LOGS_DIR = Path(__file__).parent.parent / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 
 def get_logger(name: str) -> logging.Logger:
