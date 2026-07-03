@@ -114,7 +114,7 @@ XGBOOST_PARAMS = {
 
 # Decision threshold for converting probability → pit/no-pit recommendation
 # Update this after running threshold tuning in notebooks/05_xgboost.ipynb
-DECISION_THRESHOLD = 0.50  # placeholder — update after tuning
+DECISION_THRESHOLD = 0.12  # placeholder — update after tuning
 
 MLFLOW_EXPERIMENT_XGBOOST = "f1_pitstop_xgboost"
 
