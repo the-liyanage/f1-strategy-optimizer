@@ -111,6 +111,7 @@ XGBOOST_PARAMS = {
     "n_jobs":           -1,
     # scale_pos_weight calculated dynamically from class imbalance
 }
+
 # Decision threshold for converting probability → pit/no-pit recommendation
 # Update this after running threshold tuning in notebooks/05_xgboost.ipynb
 DECISION_THRESHOLD = 0.50  # placeholder — update after tuning
