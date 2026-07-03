@@ -29,7 +29,6 @@ MLFLOW_TRACKING_DIR = ROOT_DIR / "mlflow_tracking"
 
 
 # DATA - RACES TO COLLECT =================================================
-
 RACES_2023 = [
     ("2023", "Bahrain",      "R"),
     ("2023", "Saudi Arabia", "R"),
@@ -47,11 +46,81 @@ RACES_2023 = [
 TEST_RACES = ["Singapore", "Monza"]
 
 
-# API =================================================================
 
+# FEATURE ENGINEERING
+# rates calculated from EDA (SOFT degrades fastest, HARD slowest)
+COMPOUND_ORDER = {
+    "SOFT":         0,
+    "MEDIUM":       1,
+    "HARD":         2,
+    "INTERMEDIATE": 3,
+    "WET":          4,
+}
+
+
+# Reverse mapping - used by the strategy engine to recommend compound names
+COMPOUND_NAMES = {v: k for k, v in COMPOUND_ORDER.items()}
+
+# Rollin window for lap time smoothing
+LAP_TIME_ROLLING_WINDOW = 3
+
+# Real max tyre life discovered during EDA
+MAX_TYRE_LIFE = 56
+
+# Columns never fed to the model - identity, target, or leakage sources 
+EXCLUDE_FROM_FEATURES = [
+    "Pitted", "Driver", "RaceName", "Compound",
+    "IsAccurate", "FastF1Generated", "IsPersonalBest",
+    "TrackStatus", 
+    "PitInTime", "PitOutTime",
+    "DriverNumber", "Team"
+]
+
+
+# Final feature set used for XGBoost training
+# (updated after data leakage investigation - see notebooks/02_feature_engineering.ipynb)
+FEATURE_COLS = [
+    "Stint",
+    "Sector1Time", "Sector2Time", "Sector3Time",
+    "SpeedI1", "SpeedI2", "SpeedFL", "SpeedST",
+    "TyreLife",
+    "FreshTyre",
+    "Position",
+    "CompoundEncoded",
+    "LapTimeDelta",
+    "LapTimeRolling3",
+    "DegradationFromStintStart",
+    "TotalLaps",
+    "RacePctComplete",
+    "LapsRemaining",
+    "IsLateRace",
+]
+
+TARGET_COL = "Pitted"
+
+
+# XGBOOST MODEL
+XGBOOST_PARAMS = {
+    "n_estimators":     300,
+    "max_depth":        6,
+    "learning_rate":    0.05,
+    "subsample":        0.8,
+    "colsample_bytree": 0.8,
+    "eval_metric":      "auc",
+    "random_state":     42,
+    "n_jobs":           -1,
+    # scale_pos_weight calculated dynamically from class imbalance
+}
+# Decision threshold for converting probability → pit/no-pit recommendation
+# Update this after running threshold tuning in notebooks/05_xgboost.ipynb
+DECISION_THRESHOLD = 0.50  # placeholder — update after tuning
+
+MLFLOW_EXPERIMENT_XGBOOST = "f1_pitstop_xgboost"
+
+
+# API =================================================================
 API_HOST = "0.0.0.0"
 API_PORT = 8000
-
 
 
 # LOGGING ==============================================================
