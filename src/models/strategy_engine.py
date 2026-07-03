@@ -102,3 +102,31 @@ def get_model():
 
 
 
+# FEATURE PREPARATION
+
+def situation_to_features(sitution: LapSituation) -> pd.DataFrame:
+    """
+    convert a Lapsituation into a single-row DataFrame that matches 
+    exactly what the XGBoost model was trained on.
+
+    Why :
+    the model was trained on a specific set of columns in a specific order.
+    if we pass columns in a different order, or with different names, or
+    with missing columns, XGBoost will either crash or give wrong answers,
+
+    This function gurantees the input always matches training exactly
+
+    """
+    race_pct_complete = (sitution.total_laps - sitution.laps_remaining)/sitution.total_laps
+
+    # Build a dictionary of every feature the model expects
+
+    features = {
+        "Stint":                sitution.stint,
+        "Sector1Time":          0.0,                # not available at prediction time
+        "Sector2Time":          0.0,                # filled with neutral values
+        "Sector3Time":          0.0,                 # (model learned not to rely on these)
+        "SpeedI1":              0.0,                # after leakage fix
+        "SpeedI2":              0.0,
+        "SpeedFL":    0.0
+    }
