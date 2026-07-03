@@ -119,6 +119,28 @@ DECISION_THRESHOLD = 0.12  # placeholder — update after tuning
 MLFLOW_EXPERIMENT_XGBOOST = "f1_pitstop_xgboost"
 
 
+# STRATEGY ENGINE
+
+# Lap counts for compound recommendation logic
+# SOFT tyre:   roughly 10-15 laps of good performance
+# MEDIUM tyre: roughly 20-30 laps
+# HARD tyre:   roughly 30-40+ laps
+SHORT_STINT_LAPS = 10           # if laps remaining < this --> recommend SOFT
+MEDIUM_STINT_LAPS = 20          # if laps remaining < this --> recommend MEDIUM
+                                # if laps remaining >= this --> recommend HARD
+
+
+
+# Degradation thresholds for generating the 'reason' explanation
+HIGH_TYRE_AGE = 19.9         # average life span of the pitted tyres
+HIGH_DEGRADATION_DELTA = 0.5        # In F1, a lap time increase of 0.5 seconds per lap is 
+                                    # generally considered a meaningful signal that tyres are losing performance
+
+HIGH_TOTAL_DEGRADATION = 2.0 
+
+
+
+
 # API =================================================================
 API_HOST = "0.0.0.0"
 API_PORT = 8000
