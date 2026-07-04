@@ -38,7 +38,12 @@ TEST_RACES = ["Singapore", "Monza"]
 
 
 # Columns that exist in the dataframe but must never be fed to the model
-EXCLUDE_FROM_FEATURES = ["Pitted", "Driver", "RaceName"]
+EXCLUDE_FROM_FEATURES = [
+    "Pitted", "Driver", "RaceName",
+    "Time", "LapStartTime",
+    "Sector1SessionTime", "Sector2SessionTime", "Sector3SessionTime",
+    "LapNumber", "LapTime"
+    ]
 
 
 def load_features(path: Path = FEATURES_CSV) -> pd.DataFrame:
@@ -48,8 +53,10 @@ def load_features(path: Path = FEATURES_CSV) -> pd.DataFrame:
     """
     logger.info(f"Loading features from {path}")
     df = pd.read_csv(path)
+    logger.info(f"Path of the feature engineered dataset: {path}")
     logger.info(f"Loaded {len(df)} rows, {df.shape[1]} columns")
     return df
+
 
 
 def split_by_race(df: pd.DataFrame):
@@ -78,7 +85,10 @@ def get_feature_columns(df: pd.DataFrame) -> list:
     All columns except identity/target columns the model must not see.
 
     """
-    return [c for c in df.columns if c not in EXCLUDE_FROM_FEATURES]
+    feature_columns = [c for c in df.columns if c not in EXCLUDE_FROM_FEATURES]
+    logger.info(f"feature columns: {feature_columns}")
+    return feature_columns
+
 
 
 def calculate_scale_pos_weight(y_train: pd.Series) -> float:
@@ -110,6 +120,7 @@ def train_model(X_train: pd.DataFrame, y_train: pd.DataFrame) -> xgb.XGBClassifi
         learning_rate = 0.05, # how much each tree corrects previous mistakes
         subsample = 0.8, # % of rows used per tree (reduce overfitting)
         colsample_bytree = 0.8, # % of features used per tree (reduce overfitting)
+        scale_pos_weight=scale_pos_weight, 
         eval_metric = "auc",
         random_state = 42, #reproducibility 
         n_jobs = -1, #use all available CPU cores

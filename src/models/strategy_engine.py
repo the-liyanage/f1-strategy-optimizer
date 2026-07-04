@@ -122,11 +122,23 @@ def situation_to_features(sitution: LapSituation) -> pd.DataFrame:
     # Build a dictionary of every feature the model expects
 
     features = {
-        "Stint":                sitution.stint,
-        "Sector1Time":          0.0,                # not available at prediction time
-        "Sector2Time":          0.0,                # filled with neutral values
-        "Sector3Time":          0.0,                 # (model learned not to rely on these)
-        "SpeedI1":              0.0,                # after leakage fix
-        "SpeedI2":              0.0,
-        "SpeedFL":    0.0
+        "Stint":                        sitution.stint,
+        "Sector1Time":                  0.0,                # not available at prediction time
+        "Sector2Time":                  0.0,                # filled with neutral values
+        "Sector3Time":                  0.0,                 # (model learned not to rely on these)
+        "SpeedI1":                      0.0,                # after leakage fix
+        "SpeedI2":                      0.0,
+        "SpeedFL":                      0.0,
+        "SpeedST":                      0.0,
+        "TyreLife":                     sitution.tyre_life,
+        "FreshTyre":                    1 if sitution.tyre_life <=1 else 0,
+        "Position":                     sitution.position,
+        "CompoundEncoded":              COMPOUND_ORDER.get(sitution.compound, 1),
+        "LapTimeDelta":                 sitution.lap_time_delta,
+        "LapTimeRolling3":              sitution.lap_time_rolling3,
+        "DegradationFromStintStart":    sitution.degradation_from_stint_start,
+        "TotalLaps":                    sitution.total_laps,
+        "RacePctComplete":              race_pct_complete,
+        "LapsRemaining":                sitution.laps_remaining,
+        "IsLateRace":                   1 if race_pct_complete > 0.7 else 0,
     }
