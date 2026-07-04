@@ -202,4 +202,84 @@ def reommend_compound(
         }
         preferred = fallback_map.get(preferred, "MEDIUM")
     return preferred
-1
+
+# REASON GENERATION
+
+def generate_reasons(situation: LapSituation, decision: str) -> list:
+    """
+    Inspect the most important feature values and generate plain - English
+    explanation for why the strategu engine is reommending PIT or STAY OUT.
+
+    for a PIT recommendation:
+    - explain what signals are driving the decision (high tyre age, rising lap times,
+    significant degradation, late-race timing window)
+
+    for a STAY - OUT recommendation:
+    - explain why it's safe to stay (tyres still performing, plenty of pit window remaining,
+      early in stint)
+
+      this is the "EXPLANABILITY LAYER" - turning model numbers 
+      into human reasoning that an F1 engineer ( or a user of our app)
+      an understand and verify againt their own track - side observations.
+
+    """
+
+    reasons = []
+
+    if decision == "PIT":
+        # Check tyre age
+        if situation.tyre_life >= HIGH_TYRE_AGE:
+
+            reasons.append(
+                f" Tyre age critica; - {situation.tyre_life} laps on current set"
+            )
+        
+        # check lap - to lap degradation rate
+        if situation.lap_time_delta >= HIGH_DEGRADATION_DELTA:
+            reasons.append (
+                f" Lap times inscreasing - {situation.lap_time_delta:+.2f}s vs previous lap"
+            )
+
+        # check total accumulated degradation since tyre was new
+        if situation.degradation_from_stint_start >= HIGH_TOTAL_DEGRADATION:
+            reasons.append (
+                f"Significant performane loss = {situation.degradation_from_stint_start:+.2f}s"
+                f"slower than stint start"
+            )
+
+        # check strategic timing window 
+        race_pct = (situation.total_laps - situation.laps_remaining) / situation.total_laps
+        if race_pct > 0.7 :
+            reasons.append (
+            f"Late - race strategic window - {situation.laps_remaining} laps remaining"
+            )
+        
+        # if no specific reason triggered bu model still says pit
+        if not reasons:
+            reasons.append(
+                f"Model confidence above threshold - combined tyre metrics suggest pitting now"
+            )
+    
+    else: # STAY OUT
+        # explain why it's still safe to stay out
+        if situation.tyre_life < HIGH_TYRE_AGE:
+            reasons.append (
+                f"Tyres still younf - only {situation.lap_time_delta:+.2f}s vs previous lap"
+            )
+        
+        if situation.lap_time_delta < HIGH_TOTAL_DEGRADATION:
+            reasons.append(
+                f" Lap times stable = {situation.lap_time_delta:+.2f}s vs previous lap"
+            )
+
+        if situation.degradation_from_stint_start < HIGH_TOTAL_DEGRADATION:
+            reasons.append (
+                f" Degradation within acceptable range -"
+                f"{situation.degradation_from_stint_start:+.2f}s from stint start"
+
+
+            )
+
+        if not reasons:
+            reasons.append("Tyre performance within acceptable limits - no immediate pit needed")
+    return reasons
