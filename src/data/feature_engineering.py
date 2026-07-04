@@ -85,7 +85,7 @@ EXCLUDE_FROM_FEATURES = [
 # Additonal columns only excluded for Logistic Regression (multicollinearity)
 LOGREG_ONLY_EXCLUDE = [
     "Time", "LapStartTime",
-    "Sector1SessionTime", "Sector2SessionTIme", "Sector3SessionTime",
+    "Sector1SessionTime", "Sector2SessionTime", "Sector3SessionTime",
     "LapNumber", # superseded by RacePctComplete
     "LapTime", # superseded by LapTimeRolling3
 ]
@@ -95,7 +95,7 @@ def load_raw_laps(path: Path = LAPS_CSV) -> pd.DataFrame:
     """ load the cleaned lap data produced by fetch_data.py """
     logger.info(f"Loading raw laps from {path}")
     df = pd.read_csv(path)
-    logger.info(f"Loaded {len(df)} rows, {df.shape[1]}columns")
+    logger.info(f"Loaded {len(df)} rows, {df.shape[1]} columns")
     return df
 
 def drop_useless_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -103,6 +103,7 @@ def drop_useless_columns(df: pd.DataFrame) -> pd.DataFrame:
     cols = [c for c in COLS_TO_DROP_RAW if c in df.columns]
     df = df.drop(columns = cols, errors = "ignore")
     logger.info(f"Dropped useless columns: {cols}")
+    logger.info(f"Remaining shape of the dataset:  {df.shape}")
     return df
 
 def convert_time_columns(df: pd.DataFrame) -> pd.DataFrame:
@@ -211,7 +212,7 @@ def fix_tyre_degradation_leakage(df: pd.DataFrame) -> pd.DataFrame:
         ["RaceName", "Driver", "Stint"]
 
     )["LapTimeDelta"].transform(lambda x: x.ffill())
-    df["LapTimeDelta"] - df["LapTimeDelta"].fillna(0)
+    df["LapTimeDelta"] = df["LapTimeDelta"].fillna(0)
 
 
     # LapTimeRolling3
@@ -369,12 +370,12 @@ def build_logreg_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def run_feature_engineering(save: bool = True):
-    df = load_raw_laps() 
+    df = load_raw_laps()
     df = drop_useless_columns(df)
     df = convert_time_columns(df)
     df = fix_data_types(df)
     df = create_target_variable(df)
-    df = df.drop(columns = ["PitInTime", "PitOutTime"], errors= "ignore")
+    df = df.drop(columns=["PitInTime", "PitOutTime"], errors="ignore")
 
     # IMPORTANT: drop missing LapTime BEFORE any degradation calculations
     df = drop_missing_lap_time(df)
@@ -383,35 +384,26 @@ def run_feature_engineering(save: bool = True):
     df = fix_tyre_degradation_leakage(df)
     df = fix_telemetry_leakage(df)
     df = add_race_context_features(df)
-
+    df = df.drop(columns=["Year"], errors="ignore")
     df = handle_remaining_missing_values(df)
 
     df_xgb = build_xgboost_features(df)
     df_logreg = build_logreg_features(df)
-    
 
     if save:
-        FEATURES_CSV.parent.mkdir(parents = True, exist_ok= True)
-        df_xgb.to_csv(FEATURES_CSV, index = False)
-
+        FEATURES_CSV.parent.mkdir(parents=True, exist_ok=True)
+        df_xgb.to_csv(FEATURES_CSV, index=False)
 
         scaled_path = FEATURES_CSV.parent / "features_2023_scaled.csv"
-        df_logreg.to_csv(scaled_path, index= False)
+        df_logreg.to_csv(scaled_path, index=False)
 
-
-        logger.info(f"Saved XGBoost features --> {FEATURES_CSV} ({df_xgb.shape})")
-        logger.info(f"Saved Logistic Regression features --> {scaled_path} ({df_logreg.shape})")
-
-
+        logger.info(f"✅ Saved XGBoost features → {FEATURES_CSV} ({df_xgb.shape})")
+        logger.info(f"✅ Saved Logistic Regression features → {scaled_path} ({df_logreg.shape})")
 
     return df_xgb, df_logreg
 
 
-
-
     
-
-
 
 if __name__ == "__main__":
     run_feature_engineering()
