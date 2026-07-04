@@ -62,23 +62,23 @@ class LapSituation:
 
 
 
-    @dataclass
-    class StrategyRecommendation:
-        """
-        The output of the strategy engine - everything the frontend/API needs
-        to display a complete pit stop recommendation to the user
+@dataclass
+class StrategyRecommendation:
+    """
+    The output of the strategy engine - everything the frontend/API needs
+    to display a complete pit stop recommendation to the user
 
-        """
+    """
 
-        driver: str
-        lap_number: int
-        decision: str           # pit or stay out
-        confidence_pct : float  # model's probability as a percentage
-        reasons: list           # list of plain english reason strings
-        compound_recommendation: str        # soft, medium or hard
-        current_compound: str               # what they are currently on
-        laps_remaining: int
-        tyre_life: int 
+    driver: str
+    lap_number: int
+    decision: str           # pit or stay out
+    confidence_pct : float  # model's probability as a percentage
+    reasons: list           # list of plain english reason strings
+    compound_recommendation: str        # soft, medium or hard
+    current_compound: str               # what they are currently on
+    laps_remaining: int
+    tyre_life: int 
 
 
 # MODEL LOADING
@@ -267,9 +267,9 @@ def generate_reasons(situation: LapSituation, decision: str) -> list:
                 f"Tyres still younf - only {situation.lap_time_delta:+.2f}s vs previous lap"
             )
         
-        if situation.lap_time_delta < HIGH_TOTAL_DEGRADATION:
+        if situation.lap_time_delta < HIGH_DEGRADATION_DELTA:
             reasons.append(
-                f" Lap times stable = {situation.lap_time_delta:+.2f}s vs previous lap"
+                f" Lap times stable - {situation.lap_time_delta:+.2f}s vs previous lap"
             )
 
         if situation.degradation_from_stint_start < HIGH_TOTAL_DEGRADATION:
@@ -283,3 +283,99 @@ def generate_reasons(situation: LapSituation, decision: str) -> list:
         if not reasons:
             reasons.append("Tyre performance within acceptable limits - no immediate pit needed")
     return reasons
+
+
+# THIS IS THE MAIN RECOMMENDATION FUNCTION
+def get_recommendation(situation: LapSituation) -> StrategyRecommendation:
+    """
+    Main entry point for the strategy engine.
+    Takes a Lapsituation, returns a full StrategyRecommendation.
+
+    This is what the FASTAPI endpoint will call for every prediction request.
+
+    FLOW:
+    LapSituation
+        situation_to_features()  convert to model-ready DataFrame
+        model.predict_proba()    get raw probability from XGBoost
+        compare the threshold    PIT or STAY OUT
+        generate_reasons()       explain why
+        recommend_compound()    what to put on
+        StrategyRecommendation  structured output
+
+    """
+    logger.info(f"Generating recommendation for {situation.driver} "
+                f"lap {situation.lap_number}, "
+                f"TyreLife= {situation.tyre_life}, "
+                f"Compound = {situation.compound}"
+                )
+    # Step 1: prepare features
+    features_df = situation_to_features(situation)
+
+    # Step 2: get probability from model
+    model = get_model()
+    probability = model.predict_proba(features_df)[0][1]
+    confidence_pct = round(probability * 100, 1)
+
+    # Step 3: apply threshol to make the pit/stay decision
+    decision = "PIT" if probability >= DECISION_THRESHOLD else "STAY OUT"
+
+    # Step 4: generate plain English reasons
+    reasons = generate_reasons(situation, decision)
+
+    # Step 5: recommend a compound (only meaningful if pitting)
+    compound_rec = reommend_compound(situation.compound, situation.laps_remaining)
+
+
+    # Step 6: assemble the full recommendation PHEWWWW
+    recommendation = StrategyRecommendation(
+        driver = situation.driver,
+        lap_number=situation.lap_number,
+        decision=decision,
+        confidence_pct=confidence_pct,
+        reasons=reasons,
+        compound_recommendation=compound_rec,
+        current_compound=situation.compound,
+        laps_remaining=situation.laps_remaining,
+        tyre_life=situation.tyre_life
+    )
+
+
+
+    logger.info(f"  Decision: {decision} ({confidence_pct}% confidence)")
+    logger.info(f"  Reasons: {reasons}")
+    logger.info(f"  Compound: switch from {situation.compound} to {compound_rec}")
+ 
+    return recommendation
+
+
+
+
+# QUICK TEST 
+
+if __name__ == "__main__":
+    # simulate Hamilton on lap 34 of Abhu Dhabi with degrading MEDIUM tyres
+    test_situation = LapSituation(
+        driver = "HAM",
+        lap_number=42,
+        tyre_life=28,
+        compound="MEDIUM",
+        position=3,
+        laps_remaining=16,
+        lap_time_delta=1.8,
+        degradation_from_stint_start=4.2,
+        lap_time_rolling3=95.2,
+        stint=2,
+        total_laps=58
+
+    )
+    rec = get_recommendation(test_situation)
+    print("\n" + "="*50)
+    print(f"Driver:     {rec.driver}")
+    print(f"Lap:        {rec.lap_number}")
+    print(f"Decision:   {rec.decision} ({rec.confidence_pct:.1f}% confidence)")
+    print(f"Compound:   {rec.current_compound} → {rec.compound_recommendation}")
+    print(f"Reasons:")
+    for r in rec.reasons:
+        print(f"  • {r}")
+
+ 
