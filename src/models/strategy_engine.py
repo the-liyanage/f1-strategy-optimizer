@@ -14,6 +14,11 @@ from config import (
     DECISION_THRESHOLD,
     COMPOUND_ORDER,
     COMPOUND_NAMES,
+    SHORT_STINT_LAPS,
+    MEDIUM_STINT_LAPS,
+    HIGH_DEGRADATION_DELTA,
+    HIGH_TYRE_AGE,
+    HIGH_TOTAL_DEGRADATION,
     FEATURE_COLS
 )
 
@@ -142,3 +147,59 @@ def situation_to_features(sitution: LapSituation) -> pd.DataFrame:
         "LapsRemaining":                sitution.laps_remaining,
         "IsLateRace":                   1 if race_pct_complete > 0.7 else 0,
     }
+
+    # convert to a single-row DataFrame - same format model.predict() expets
+    df = pd.DataFrame([features])
+
+    # Ensure column order matches training exactly - XGBoost is sensitive to this
+    available_cols = [c for c in FEATURE_COLS if c in df.columns]
+    df = df[available_cols]
+
+    return df
+
+
+
+# COMPOUND RECOMMENDATION
+
+def reommend_compound(
+        current_compound: str,
+        laps_remaining: int,
+) -> str:
+    """
+    Recommend which tyre compound to swtich to based on:
+    1. How many laps are remaining (determines how long the tyre need to last)
+    2. What compound is currently fitted (F1 rules require at least two
+        different compounds per race, so we never recommend the same one.)
+
+    3. Whether the car is on wet weather tyres (different logis applies)
+
+
+    """
+
+    # wet weather tyres - recommend MEDIUM as the default dry compound
+    if current_compound in ["INTERMEDIATE", "WET"]:
+        return "MEDIUM"
+    
+    # Choose based on laps remaining
+    if laps_remaining < SHORT_STINT_LAPS:
+        # very few laps left --> SOFT for maximum pace sprint to finish
+        preferred = "SOFT"
+    elif laps_remaining < MEDIUM_STINT_LAPS:
+        # Moderate laps left --> MEDIUM for balanced performance/durability
+        preferred = "MEDIUM"
+    else:
+        # Many laps left --> HARD for durability, avoid another stop
+        preferred = "HARD"
+
+    # never recommend the same compound currently fitted
+    if preferred == current_compound:
+        # fall back to the next -best option
+        fallback_map ={
+            "SOFT": "MEDIUM",
+            "MEDIUM": "HARD",
+            "HARD": "MEDIUM"
+
+        }
+        preferred = fallback_map.get(preferred, "MEDIUM")
+    return preferred
+1
