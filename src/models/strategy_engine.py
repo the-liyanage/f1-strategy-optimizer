@@ -231,20 +231,20 @@ def generate_reasons(situation: LapSituation, decision: str) -> list:
         if situation.tyre_life >= HIGH_TYRE_AGE:
 
             reasons.append(
-                f" Tyre age critica; - {situation.tyre_life} laps on current set"
+                f" Tyre age critical - {situation.tyre_life} laps on current set"
             )
         
         # check lap - to lap degradation rate
         if situation.lap_time_delta >= HIGH_DEGRADATION_DELTA:
             reasons.append (
-                f" Lap times inscreasing - {situation.lap_time_delta:+.2f}s vs previous lap"
+                f" Lap times increasing - {situation.lap_time_delta:+.2f}s vs previous lap"
             )
 
         # check total accumulated degradation since tyre was new
         if situation.degradation_from_stint_start >= HIGH_TOTAL_DEGRADATION:
             reasons.append (
-                f"Significant performane loss = {situation.degradation_from_stint_start:+.2f}s"
-                f"slower than stint start"
+                f"Significant performance loss = {situation.degradation_from_stint_start:+.2f}s"
+                f" slower than stint start"
             )
 
         # check strategic timing window 
@@ -297,10 +297,10 @@ def get_recommendation(situation: LapSituation) -> StrategyRecommendation:
     LapSituation
         situation_to_features()  convert to model-ready DataFrame
         model.predict_proba()    get raw probability from XGBoost
-        compare the threshold    PIT or STAY OUT
+        hybrid decision logic    model or domain rules --> PIT? STAY OUT
         generate_reasons()       explain why
-        recommend_compound()    what to put on
-        StrategyRecommendation  structured output
+        recommend_compound()     which tyre  to put on
+        StrategyRecommendation   structured output for API/frontend
 
     """
     logger.info(f"Generating recommendation for {situation.driver} "
@@ -309,24 +309,96 @@ def get_recommendation(situation: LapSituation) -> StrategyRecommendation:
                 f"Compound = {situation.compound}"
                 )
     # Step 1: prepare features
+    # Convert the LapSituation object into a single-row DataFrame that
+    # matches exactly what the XGBoost model was trained on
     features_df = situation_to_features(situation)
 
     # Step 2: get probability from model
+    # model.predict_proba() returns two numbers per row:
+    #   [probability of class 0 (stay out), probability of class 1 (pit)]
+    # We take [0][1] meaning: first row, second column = P(pit)
+
     model = get_model()
     probability = model.predict_proba(features_df)[0][1]
     confidence_pct = round(probability * 100, 1)
+ 
 
-    # Step 3: apply threshol to make the pit/stay decision
-    decision = "PIT" if probability >= DECISION_THRESHOLD else "STAY OUT"
+    # ================================================================
 
+    # Step 3: Hybrid decision logic
+    # Why hybrid :
+    # Our XGBoost model has low recall - it misses many genuine pit stops
+    # This is a known limitation ( only 325 pit examples in training data)
+    # A hybrid system compensates by adding domain knowledge rules alongside
+    # the model. Real F1 teams always combine ML predictions with engineer
+    # judgement - never reply puerly on one signal
+
+    # SIGNAL 1 - Model probability
+    # if model is above 24% confident --> recommend pit
+    # (threshold tuned for best F1 on our test set)
+    model_says_pit = probability >= DECISION_THRESHOLD
+
+    # SIGNAL 2 - Domain knowledge rules
+    # These are validated against real pit stop patterns in our EDA:
+    #   HIGH_TYRE_AGE = 20 (average tyre age at pit = 20 laps from EDA
+    #   HIGH_DEGRADATION_DELTA = 0.5 (meaningful lap-to-lap slowdown threshold)
+    #   HIGH_TOTAL_DEGRADATION = 2.0 (significant total wear since new tyres)
+
+    # Rule A: tyre is old AND has lost significant total performane
+    # Rule B: tyre is old AND currently getting notably slower lap by lap
+
+    # Either rule alone is enough to trigger a pit recommendation
+    # regardless of what the model says
+
+    domain_says_pit = (
+        # Rule A: critical age + siginificant accumulated wear
+        (situation.tyre_life >= HIGH_TYRE_AGE and
+         situation.degradation_from_stint_start >= HIGH_TOTAL_DEGRADATION)
+         or
+        # Rule B: critical age + actively getting slower right now
+        (situation.tyre_life >= HIGH_TYRE_AGE and
+         situation.lap_time_delta >= HIGH_DEGRADATION_DELTA
+         ) 
+    )
+
+    # FINAL DECISION - either signal is enough
+    # If the model says pit OR the domain rules say pit --> recommend pit
+    # Both must say "STAY OUT" to keep the driver out
+    decision = "PIT" if (model_says_pit or domain_says_pit) else "STAY out"
+
+    # Log which signal(s) triggered the decision 
+    decision_source = []
+    if model_says_pit:
+        decision_source.append(f"model ({confidence_pct}% confidence)")
+    if domain_says_pit:
+        decision_source.append("domain rules")
+    if decision_source:
+        logger.info(f"  Triggered by: {', '.join(decision_source)}")
+    else:
+        logger.info("  Neither signal triggered — staying out")
+
+
+
+
+
+
+    # ===================================================================
     # Step 4: generate plain English reasons
+    # Inspects the actual feature values and explains WHY we recommended
+    # this decision in human-readable text for the frontend to display.
     reasons = generate_reasons(situation, decision)
 
     # Step 5: recommend a compound (only meaningful if pitting)
+    # Domain logic: based on laps remaining + current compound
+    # (never recommend same compound currently fitted — F1 rules require
+    # at least two different compounds per race)
+    # =============================================
     compound_rec = reommend_compound(situation.compound, situation.laps_remaining)
 
 
     # Step 6: assemble the full recommendation PHEWWWW
+    # Bundle everything into a StrategyRecommendation dataclass
+    # that the FastAPI endpoint returns as JSON to the frontend.
     recommendation = StrategyRecommendation(
         driver = situation.driver,
         lap_number=situation.lap_number,
