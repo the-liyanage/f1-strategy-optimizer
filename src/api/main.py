@@ -108,6 +108,7 @@ class PredictRequest(BaseModel):
     lap_time_delta: float = Field(..., description = "Lap time change vs previous lap (seconds)")
     degradation_from_stint_start: float = Field(..., description = "Total time lost since tyre fitted (seconds)")
     lap_time_rolling3: float = Field(...,description = "Current stint number")
+    stint: int = Field(default=1, description = "Current stint number")
     total_laps: int = Field(default = 57, description = "total race distance in laps")
 
 
@@ -205,7 +206,7 @@ def predict(request: PredictRequest):
             lap_time_delta=request.lap_time_delta,
             degradation_from_stint_start=request.degradation_from_stint_start,
             lap_time_rolling3=request.lap_time_rolling3,
-            stint=request.stint,
+            stint = request.stint,
             total_laps=request.total_laps
 
         )
@@ -219,13 +220,13 @@ def predict(request: PredictRequest):
             decision = rec.decision,
             confidence_pct = rec.confidence_pct,
             reasons = rec.reasons,
-            compound_recommendation = rec.compoun_recommendation,
+            compound_recommendation = rec.compound_recommendation,
             current_compound = rec.current_compound,
             laps_remaining = rec.laps_remaining,
             tyre_life = rec.tyre_life,
         )
     except Exception as e:
-        logger.error(f"Prediction failes: {e}")
+        logger.error(f"Prediction failed: {e}")
         raise HTTPException(status_code = 500, detail=str(e))
 
 
