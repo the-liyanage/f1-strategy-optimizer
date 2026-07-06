@@ -132,6 +132,103 @@ class PredictResponse(BaseModel):
 
 
 
+# ENDPOINTS
+@app.get("/health")
+def health_check():
+    """
+    Simple health check - returns ok if the server is running
+
+    Used by Docker to verify the container is alive and ready.
+    also useful for checking the server started correctly after deployment.
+
+    the @app.get("/health") decorator tells FastAPI:
+    'when someone makes a GET request to /health, run this function'
+    """
+
+    return {"status": "ok", "model_loaded": hasattr(app.state, "model")}
+
+@app.get("/races")
+def get_races():
+    """
+    Returns the list of races available in our training data,
+
+    The Streamlit frontend uses this to populate the race selector dropdownn
+    We pull the race names directly from config so there is only one source
+    of truth - of you add more races to config, they appear here 
+    automatially.
+
+    """
+
+    race_names = [race[1] for race in RACES_2023]
+    return {"races": race_names}
+
+
+@app.post("/predict", response_model = PredictResponse)
+def predict(request: PredictRequest):
+    """
+    Main endpoint - takes a lap situation, returns a pit stop recommendation.
+
+    HOW IT WORKS:
+        1. FastAPI receives the JSON request body
+        2. Pydantic validates every feild automatically
+        3. we convert the validated request into a LapSituation object
+        4. Pass it to get_recommendation() from our strategy engine
+        5. convert the result into a PredictResponse and return it
+
+
+    the @app.post decorator means this endpoint only accepts POST requests
+    (not GET) because we are sending data IN the request body, not
+    just asking for dara.
+
+    response_model = PredictResponse tells FastAPU to validate the OUTPUT
+    too - if our code accidentally returns a wrrong field, 
+    FastAPI catches it
+
+
+    HTTPException is raised when something goes wrong, FastAPI converts
+    it into a proper HTTP error response with a status code and message, instead
+    of crashing with a Python traceback
+    """
+
+    try:
+        logger.info(f"Received predict request for {request.driver} lap {request.lap_number}")
+
+        # convert the pydantic request model into our LapSituation dataclass
+        # (strategy engine expects LapSituation, no PredictRequest)
+        situation = LapSituation(
+            driver=request.driver,
+            lap_number=request.lap_number,
+            tyre_life=request.tyre_life,
+            compound=request.compound,
+            position=request.position,
+            laps_remaining=request.laps_remaining,
+            lap_time_delta=request.lap_time_delta,
+            degradation_from_stint_start=request.degradation_from_stint_start,
+            lap_time_rolling3=request.lap_time_rolling3,
+            stint=request.stint,
+            total_laps=request.total_laps
+
+        )
+        # get recommendation from strategy enginer
+        rec = get_recommendation(situation)
+
+        # convert StrategyRecommendation into PredictResponse
+        return PredictResponse(
+            driver = rec.driver,
+            lap_number = rec.lap_number,
+            decision = rec.decision,
+            confidence_pct = rec.confidence_pct,
+            reasons = rec.reasons,
+            compound_recommendation = rec.compoun_recommendation,
+            current_compound = rec.current_compound,
+            laps_remaining = rec.laps_remaining,
+            tyre_life = rec.tyre_life,
+        )
+    except Exception as e:
+        logger.error(f"Prediction failes: {e}")
+        raise HTTPException(status_code = 500, detail=str(e))
+
+
 
 
 
