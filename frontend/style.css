@@ -1,0 +1,75 @@
+/* -- Tokens -- */
+:root{
+    --cream:      #f5efe6;
+    --cream-dark: #ece4d8;
+    --black:      #111111;
+    --red:        #e8002d;
+    --red-soft:   #ff1e3c;
+    --gold:       #c9a84c;
+    --text:       #1a1a1a;
+    --muted:      #7a6f65;
+    --soft-red:   #ff5f5f;
+    --soft-yellow:#f5c842;
+    --hard-white: #f0f0f0;
+    --inter-green:#39b54a;
+    --wet-blue:   #0066cc;
+    
+}
+
+/* hide streamlit chrome */
+#MainMenu, header, footer { visibility: hidden; }
+.block-container { padding: 0 !important; max-width: 100%; !important }
+section[data-testid = "stSidebar"] { display: none; }
+
+/* -- Hero Banner -- */
+.hero {
+    background: var(--black);
+    padding: 2rem 3rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--red);
+}
+
+.hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+    color: #fff;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0;
+}
+.hero-title span { color: var(--red); }
+.hero-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: #666;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+}
+.hero-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: #fff;
+    border: 1px solid var(--red);
+    padding: 0.3rem 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+}
+
+
+
+/* -- Footer -- */
+.footer{
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: #bbb;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--cream-dark);
+    margin-top: 3rem;
+}
