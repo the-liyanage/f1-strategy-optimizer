@@ -60,6 +60,34 @@ section[data-testid = "stSidebar"] { display: none; }
 }
 
 
+/* -- Tyre selector -- */
+.tyre-row {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.tyre-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.tyre-option:hover { opacity: 0.8; transform: scale(1.05); }
+.tyre-option:active { opacity:1; transform: scale(1.1); }
+.tyre-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
 
 /* -- Footer -- */
 .footer{
