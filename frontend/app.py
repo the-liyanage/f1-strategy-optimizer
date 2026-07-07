@@ -3,6 +3,7 @@ import requests
 import json
 
 from components.tyre import tyre_svg
+from components.layout import hero, footer
 
 
 # PAGE CONFIG 
@@ -23,28 +24,19 @@ with open("frontend/style.css") as f:
 
 
 # HERO SECTION
-st.markdown("""
-             <div class = "hero">
-                <div>
-                    <p class = "hero-title"><span>Box Box</span> · F1 Strategy</p>
-                    <p class = "hero-sub">Pit Stop Optimizer · 2023 Season</p>
-                </div>
-                <div class = "hero-badge">ML-powered Strategy</div>
-            </div>
-           """, unsafe_allow_html = True)
+st.components.v1.html(
+    hero()
+    )
 
 
+
+# TYRE SECTION
 st.components.v1.html(
     tyre_svg("SOFT"),
-    height=150,
-    width=150
-)
+    )
 
 
 # FOOTER 
-st.markdown("""
-            <div class = "footer">
-            Box Box · F1 Strategy Optimizer · Built with XGBoost + FastAPI + Streamlit
-            </div>
-            """,
-            unsafe_allow_html = True)
+st.components.v1.html(
+    footer()
+    )
