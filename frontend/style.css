@@ -1,3 +1,7 @@
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+
 /* -- Tokens -- */
 :root{
     --cream:      #f5efe6;
@@ -15,6 +19,13 @@
     --wet-blue:   #0066cc;
     
 }
+
+/* ── Base ── */
+.stApp {
+    background-color: var(--cream) !important;
+    font-family: 'DM Sans', sans-serif;
+}
+ 
 
 /* hide streamlit chrome */
 #MainMenu, header, footer { visibility: hidden; }
@@ -38,6 +49,7 @@ section[data-testid = "stSidebar"] { display: none; }
     letter-spacing: -0.02em;
     line-height: 1;
     margin: 0;
+    padding-bottom: 1.0rem;
 }
 .hero-title span { color: var(--red); }
 .hero-sub {
