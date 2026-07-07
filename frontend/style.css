@@ -32,6 +32,8 @@
 .block-container { padding: 0 !important; max-width: 100%; !important }
 section[data-testid = "stSidebar"] { display: none; }
 
+
+
 /* -- Hero Banner -- */
 .hero {
     background: var(--black);
@@ -71,6 +73,24 @@ section[data-testid = "stSidebar"] { display: none; }
 
 }
 
+/* -- Main Layout -- */
+.main-wrap {
+    padding: 2.5rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* -- Section label -- */
+.section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--cream-dark);
+}
 
 /* -- Tyre selector -- */
 .tyre-row {
@@ -99,6 +119,8 @@ section[data-testid = "stSidebar"] { display: none; }
     text-transform: uppercase;
     color: var(--text);
 }
+
+
 
 
 /* -- Footer -- */
