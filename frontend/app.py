@@ -33,7 +33,9 @@ def render_hero():
 def render_left_panel() -> tuple:
     driver = driver_selector()
     compound = tyre_selector()
-    return driver, compound
+    race = race_inputs()
+    
+    return driver, compound, race
 
 def render_footer():
     footer_panel = footer()
@@ -51,7 +53,7 @@ def main():
     left, _, right = st.columns([1.1, 0.08, 0.92])
     
     with left:
-        driver, compound =render_left_panel()
+        driver, compound, race =render_left_panel()
     st.markdown('</div>', unsafe_allow_html=True)
     
     render_footer()

@@ -39,7 +39,7 @@ section[data-testid = "stSidebar"] { display: none; }
 /* -- Hero Banner -- */
 .hero {
     background: var(--black);
-    padding: 2rem 3rem 1.5rem;
+    padding: 1.8rem 3rem 1.4rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -60,7 +60,7 @@ section[data-testid = "stSidebar"] { display: none; }
 .hero-sub {
     font-family: 'Space Mono', monospace;
     font-size: 0.7rem;
-    color: #666;
+    color: #555;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     margin-top: 0.3rem;
@@ -70,7 +70,7 @@ section[data-testid = "stSidebar"] { display: none; }
     font-size: 0.65rem;
     color: #fff;
     border: 1px solid var(--red);
-    padding: 0.3rem 0.7rem;
+    padding: 0.3rem 0.8rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 
@@ -103,9 +103,6 @@ section[data-testid = "stSidebar"] { display: none; }
     margin-bottom: 0.6rem;
 }
 
-.driver-grid.active {
-    color:#39b54a;
-}
 
 .driver-chip {
     font-family: 'Space Mono', monospace;
@@ -130,7 +127,7 @@ section[data-testid = "stSidebar"] { display: none; }
 /* -- Tyre selector -- */
 .tyre-row {
     display: flex;
-    gap: 1.2rem;
+    gap: 10px;
     align-items: flex-end;
     margin-bottom: 1rem;
 }
@@ -139,15 +136,15 @@ section[data-testid = "stSidebar"] { display: none; }
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
+    gap: 4px;
     cursor: pointer;
-    opacity: 0.5;
+    opacity: 0.4;
     transition: opacity 0.15s, transform 0.15s;
     cursor: pointer;
 }
 
-.tyre-item:active { opacity: 0.8; transform: scale(1.05); }
-.tyre-item:hover { opacity:1; transform: scale(1.1); }
+.tyre-item:active { opacity: 0.8; transform: scale(1.08); }
+.tyre-item:hover { opacity: 0.75; }
 .tyre-lbl {
     font-family: 'Space Mono', monospace;
     font-size: 0.6rem;
@@ -157,6 +154,26 @@ section[data-testid = "stSidebar"] { display: none; }
 }
 
 
+
+/* Sliders + number inputs */
+.stSlider label {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.75rem !important;
+    color: var(--muted) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    
+}
+
+.stSlider > div > div > div > div {background: var(--cream) !important;}
+
+.stNumberInput label {
+    font-family: 'DM Sans', sans-serif !important;
+    font-size: 0.75rem !important;
+    color: var(--red-soft) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
 
 
 /* -- Footer -- */
