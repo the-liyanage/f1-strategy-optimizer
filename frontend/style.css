@@ -12,6 +12,8 @@
     --gold:       #c9a84c;
     --text:       #1a1a1a;
     --muted:      #7a6f65;
+
+    /* compound colors */
     --soft-red:   #ff5f5f;
     --soft-yellow:#f5c842;
     --hard-white: #f0f0f0;
@@ -46,14 +48,15 @@ section[data-testid = "stSidebar"] { display: none; }
 
 .hero-title {
     font-family: 'DM Serif Display', serif;
-    font-size: 2.4rem;
     color: #fff;
     letter-spacing: -0.02em;
     line-height: 1;
     margin: 0;
     padding-bottom: 1.0rem;
+    font-size: 2.2em;
 }
-.hero-title span { color: var(--red); }
+.hero-title span { color: var(--red); font-size: 2.2em}
+
 .hero-sub {
     font-family: 'Space Mono', monospace;
     font-size: 0.7rem;
@@ -81,26 +84,58 @@ section[data-testid = "stSidebar"] { display: none; }
 }
 
 /* -- Section label -- */
-.section-label {
+.sec-label {
     font-family: 'Space Mono', monospace;
     font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
     padding-bottom: 0.4rem;
     border-bottom: 1px solid var(--cream-dark);
 }
+
+/* -- Driver grid -- */
+.driver-grid {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+}
+
+.driver-grid.active {
+    color:#39b54a;
+}
+
+.driver-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: :0.7rem;
+    font-weight: 700;
+    padding: 5px 10px;
+    border: 1.5px solid #d4c8bc;
+    background: transparent;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    transition: border-color 0.15s, color 0.15s;
+   
+}
+.driver-chip.active {
+    background: var(--black);
+    border-color: var(--black);
+    color:#ff5f5f;
+}
+ 
 
 /* -- Tyre selector -- */
 .tyre-row {
     display: flex;
     gap: 1.2rem;
-    align-items: center;
-    margin-bottom: 2rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
 }
 
-.tyre-option {
+.tyre-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -108,11 +143,12 @@ section[data-testid = "stSidebar"] { display: none; }
     cursor: pointer;
     opacity: 0.5;
     transition: opacity 0.15s, transform 0.15s;
+    cursor: pointer;
 }
 
-.tyre-option:hover { opacity: 0.8; transform: scale(1.05); }
-.tyre-option:active { opacity:1; transform: scale(1.1); }
-.tyre-label {
+.tyre-item:active { opacity: 0.8; transform: scale(1.05); }
+.tyre-item:hover { opacity:1; transform: scale(1.1); }
+.tyre-lbl {
     font-family: 'Space Mono', monospace;
     font-size: 0.6rem;
     letter-spacing: 0.1em;
