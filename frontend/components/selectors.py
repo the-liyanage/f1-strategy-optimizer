@@ -1,100 +1,84 @@
-# selectors return a CHOICE from a fixed set of options
-        # which driver, which compound, which mode
-# inputs return a NUMBER the user configures 
-        # lap count, tyre age, degradation
-
-
-
-
-
+"""
+components/selectors.py
+========================
+Driver, tyre compound, and mode selectors.
+Uses native Streamlit components only — no CSS hacks.
+"""
 import streamlit as st
 from components.tyre import tyre_svg, COMPOUND_COLOURS
 
+DRIVERS   = ["VER", "HAM", "LEC", "SAI", "PER", "NOR", "ALO", "RUS", "STR", "PIA"]
+COMPOUNDS = list(COMPOUND_COLOURS.keys())
+MODES     = ["Standard", "Toto Mode", "Ferrari Mode", "Engineer Radio"]
 
-DRIVERS = ["VER", "HAM", "LEC", "SAI", "PER", "NOR", "ALO", "RUS", "STR", "PIA"]
 
-COMPOUNDS = list(COMPOUND_COLOURS.keys()) # this preserves order
-
-def on_driver_change():
-    """Callback to instantly sync selectbox state to the custom chip state"""
-    st.session_state["driver"] = st.session_state["driver_select"]
-
-def driver_selector()-> str:
-    st.markdown(
-        '<p class="sec-label">01 · Select Driver</p>',
-        unsafe_allow_html=True
-        )
-    # read current selection from session state
-    current = st.session_state.get("driver", "HAM")
-    
-    # Decorative chip row
-    chips_html = '<div class = "driver-grid">'
-    
-    for driver in DRIVERS:
-        active_class = "active" if driver == current else ""
-        chips_html += f'<span class = "driver-chip{active_class}">{driver}</span>'
-    chips_html += "</div>"
-    st.markdown(chips_html, unsafe_allow_html = True)
-        
-    
-     # Functional selectbox — the actual control that updates state
-    chosen = st.selectbox(
+def driver_selector() -> str:
+    """
+    Driver selector using st.selectbox.
+    Simple and reliable — shows current driver in a dropdown.
+    """
+    st.markdown('<p class="sec-label">01 · Select Driver</p>', unsafe_allow_html=True)
+    driver = st.selectbox(
         "Driver",
         DRIVERS,
-        index=DRIVERS.index(current),
-        label_visibility="collapsed",
+        index=1,
         key="driver_select",
-        on_change=on_driver_change
+        label_visibility="collapsed",
     )
-    
-    return chosen
-
+    return driver
 
 
 def tyre_selector() -> str:
     """
-    renders PIRELLI tyre SVGs as a compound selector.
-    
-    each compound gets its own column with:
-        - the tyre SVG
-        - the compound short name below it
-        - the hidden Streamlit button that handles the click
+    Tyre selector — real Streamlit buttons with SVG tyres above each one.
+    No CSS hacks. Each button stores selection in session_state.
     """
-    
     st.markdown(
         '<p class="sec-label" style="margin-top:1.5rem">02 · Tyre Compound</p>',
-        unsafe_allow_html=True)
-    
-    
-    
-    # 1. Fetch current state at the start
-    selected_compound = st.session_state.get("compound", "MEDIUM")
-    cols = st.columns(len(COMPOUNDS))
-    
+        unsafe_allow_html=True,
+    )
+
+    if "compound" not in st.session_state:
+        st.session_state["compound"] = "MEDIUM"
+
+    selected = st.session_state["compound"]
+    cols = st.columns(5)
+
     for col, compound in zip(cols, COMPOUNDS):
         with col:
-            is_active = selected_compound == compound
-            active_class = "active" if is_active else ""
- 
-            # Render the custom visual wrapper
+            is_active = selected == compound
+            size = 72 if is_active else 60
             st.markdown(
-                f'<div class="tyre-item {active_class}">'
-                f'{tyre_svg(compound, size=48, active=is_active)}'
-                f'<span class = "tyre-lbl">{compound[:3]}</span>'
+                f'<div style="text-align:center;opacity:{"1" if is_active else "0.45"};'
+                f'margin-bottom:6px">'
+                f'{tyre_svg(compound, size=size, active=is_active)}'
                 f'</div>',
-                unsafe_allow_html=True
-                )
- 
-            # functional button
-            
+                unsafe_allow_html=True,
+            )
             if st.button(
-                compound[:3], 
+                compound[:3],
                 key=f"cmp_{compound}",
-                help=f"Select {compound}",
+                type="primary" if is_active else "secondary",
+                use_container_width=True,
             ):
                 st.session_state["compound"] = compound
                 st.rerun()
-            
-            
-    # 3. Return the exact state we read at the beginning (callbacks ensure accuracy on rerun)
+
     return st.session_state.get("compound", "MEDIUM")
+
+
+def mode_selector() -> str:
+    """
+    Mode selector — native Streamlit horizontal radio.
+    """
+    st.markdown(
+        '<p class="sec-label" style="margin-top:1.5rem">05 · Strategy Mode</p>',
+        unsafe_allow_html=True,
+    )
+    return st.radio(
+        "Strategy mode",
+        MODES,
+        horizontal=True,
+        label_visibility="collapsed",
+        key="mode_radio",
+    )
