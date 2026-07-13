@@ -101,40 +101,40 @@ div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
 .rec-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
 .rec-card.standard { background: #111; }        .rec-card.standard::before { background: var(--black); }
 .rec-card.toto     { background: #052e16; }     .rec-card.toto::before     { background: var(--green); }
-.rec-card.ferrari  { background: #1c0000; }     .rec-card.ferrari::before  { background: var(--ferr); }
-.rec-card.radio    { background: #1e1b4b; }     .rec-card.radio::before    { background: var(--purp); }
+.rec-card.ferrari  { background: #360106; }     .rec-card.ferrari::before  { background: #360106; }
+.rec-card.radio    { background: #080259; }     .rec-card.radio::before    { background: #080259;; }
 
 /* ── Card internals — FIX: all text must be light on dark cards ── */
 .mode-tag { display: inline-block; font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; margin-bottom: 10px; }
 .mode-tag.toto    { background: rgba(34,197,94,0.2);   color: #052e16; }
-.mode-tag.ferrari { background: rgba(239,68,68,0.2);   color: #fca5a5; }
-.mode-tag.radio   { background: rgba(167,139,250,0.25); color: #c4b5fd; }
+.mode-tag.ferrari { background: rgba(114, 16, 16, 0.2);   color: #360106; }
+.mode-tag.radio   { background: rgba(167,139,250,0.25); color: #080259; }
 
 .rec-driver { font-family: 'Space Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
 .rec-driver.standard { color: #999; }
 .rec-driver.toto     { color: #052e16; }
-.rec-driver.ferrari  { color: #fca5a5; }
-.rec-driver.radio    { color: #c4b5fd; }
+.rec-driver.ferrari  { color: #360106; }
+.rec-driver.radio    { color: #080259; }
 
 .rec-decision { font-family: 'DM Serif Display', serif; font-size: 2.8rem; line-height: 1; margin-bottom: 1.2rem; }
 .rec-decision.pit     { color: var(--red); }
 .rec-decision.stay    { color: var(--green); }
 .rec-decision.toto    { color: #052e16; }
-.rec-decision.ferrari { color: #ff6b6b; }
-.rec-decision.radio   { color: var(--purp); }
+.rec-decision.ferrari { color: #360106; }
+.rec-decision.radio   { color: #080259; }
 
 /* compound row */
 .compound-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 4px; margin-bottom: 1.2rem; }
 .compound-row.standard { background: rgba(255,255,255,0.06); }
 .compound-row.toto     { background: #052e16; }
-.compound-row.ferrari  { background: rgba(239,68,68,0.1); }
-.compound-row.radio    { background: rgba(167,139,250,0.1); }
+.compound-row.ferrari  { background: #360106; }
+.compound-row.radio    { background: #080259; }
 
 .compound-label { font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
 .compound-label.standard { color: #666; }
 .compound-label.toto     { color: #052e16; }
-.compound-label.ferrari  { color: #fca5a5; }
-.compound-label.radio    { color: #c4b5fd; }
+.compound-label.ferrari  { color: #360106; }
+.compound-label.radio    { color: #080259; }
 
 .compound-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: #fff; }
 .compound-name-rec { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
@@ -146,8 +146,8 @@ div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
 .compound-arrow { font-size: 1.3rem; }
 .compound-arrow.standard { color: #444; }
 .compound-arrow.toto     { color: #052e16; }
-.compound-arrow.ferrari  { color: #fca5a5; }
-.compound-arrow.radio    { color: #c4b5fd; }
+.compound-arrow.ferrari  { color: #360106; }
+.compound-arrow.radio    { color: #d7d4e0; }
 
 /* reasons */
 .reasons-block { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-bottom: 1.2rem; }
@@ -158,29 +158,29 @@ div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
 .quote-block { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; margin-bottom: 1rem; }
 .quote-text { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 1.1rem; line-height: 1.5; margin-bottom: 8px; }
 .quote-text.toto    { color: #052e16; }
-.quote-text.ferrari { color: #fca5a5; }
-.quote-text.radio   { color: #c4b5fd; }
+.quote-text.ferrari { color: #360106; }
+.quote-text.radio   { color: #080259; }
 .quote-sub { font-family: 'DM Sans', sans-serif; font-size: 0.78rem; line-height: 1.5; }
 .quote-sub.toto    { color: #052e16; }
-.quote-sub.ferrari { color: #f87171; }
-.quote-sub.radio   { color: #a78bfa; }
+.quote-sub.ferrari { color: #360106; }
+.quote-sub.radio   { color: #080259; }
 
 .compound-note { font-family: 'Space Mono', monospace; font-size: 0.58rem; padding: 8px 12px; border-radius: 3px; margin-bottom: 1.2rem; line-height: 1.6; }
 .compound-note.toto    { background: #052e16;   color: #86efac; border-left: 2px solid var(--green); }
-.compound-note.ferrari { background: rgba(239,68,68,0.08);   color: #fca5a5; border-left: 2px solid var(--ferr); }
-.compound-note.radio   { background: rgba(167,139,250,0.12); color: #c4b5fd; border-left: 2px solid var(--purp); }
+.compound-note.ferrari { background: #360106;   color: #fca5a5; border-left: 2px solid var(--ferr); }
+.compound-note.radio   { background: #080259; color: #c4b5fd; border-left: 2px solid var(--purp); }
 
 /* confidence */
 .conf-label { display: flex; justify-content: space-between; font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
 .conf-label.standard { color: #555; }
 .conf-label.toto     { color: #052e16; }
-.conf-label.ferrari  { color: #fca5a5; }
-.conf-label.radio    { color: #c4b5fd; }
+.conf-label.ferrari  { color: #360106 }
+.conf-label.radio    { color: #080259; }
 .conf-bar-bg { height: 3px; border-radius: 2px; overflow: hidden; }
 .conf-bar-bg.standard { background: #2a2a2a; }
 .conf-bar-bg.toto     { background: #052e16; }
-.conf-bar-bg.ferrari  { background: #3a0a0a; }
-.conf-bar-bg.radio    { background: #2a1a4a; }
+.conf-bar-bg.ferrari  { background: #360106; }
+.conf-bar-bg.radio    { background: #080259; }
 .conf-bar-fill { height: 100%; border-radius: 2px; }
 .conf-bar-fill.standard { background: var(--red); }
 .conf-bar-fill.toto     { background: var(--green); }
@@ -192,20 +192,20 @@ div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
 .stat-chip { flex: 1; border-radius: 3px; padding: 8px 10px; text-align: center; }
 .stat-chip.standard { background: #1e1e1e; border: 1px solid #2a2a2a; }
 .stat-chip.toto     { background: #052e16;   border: 1px solid rgba(34,197,94,0.25); }
-.stat-chip.ferrari  { background: rgba(239,68,68,0.08);   border: 1px solid rgba(239,68,68,0.25); }
-.stat-chip.radio    { background: rgba(167,139,250,0.1);  border: 1px solid rgba(167,139,250,0.25); }
+.stat-chip.ferrari  { background: #360106;   border: 1px solid rgba(239,68,68,0.25); }
+.stat-chip.radio    { background: #080259;  border: 1px solid rgba(167,139,250,0.25); }
 .stat-value { font-family: 'Space Mono', monospace; font-size: 0.95rem; font-weight: 700; color: #fff; display: block; }
 .stat-label { font-family: 'DM Sans', sans-serif; font-size: 0.52rem; text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-top: 3px; }
 .stat-label.standard { color: #666; }
 .stat-label.toto     { color: #4ade80; }
 .stat-label.ferrari  { color: #fca5a5; }
-.stat-label.radio    { color: #c4b5fd; }
+.stat-label.radio    { color: #eae9ed; }
 
-.footnote { font-family: 'Space Mono', monospace; font-size: 0.48rem; letter-spacing: 0.08em; text-transform: uppercase; text-align: right; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
+.footnote { font-family: 'Space Mono', monospace; font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase; text-align: right; margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
 .footnote.standard { color: #444; }
 .footnote.toto     { color: #052e16; }
-.footnote.ferrari  { color: #fca5a5; }
-.footnote.radio    { color: #c4b5fd; }
+.footnote.ferrari  { color: #360106; }
+.footnote.radio    { color: #080259; }
 
 /* empty + error */
 .empty-card { background: #111; border-radius: 6px; min-height: 440px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border-top: 3px solid var(--red); }
