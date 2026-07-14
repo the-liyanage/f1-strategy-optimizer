@@ -1,5 +1,5 @@
 """
-frontend/app.py — Entry point
+frontend/app.py
 Run: streamlit run frontend/app.py
 """
 from pathlib import Path
@@ -39,66 +39,74 @@ def render_hero():
     </div>""", unsafe_allow_html=True)
 
 
-def render_left_panel() -> tuple:
-    driver   = driver_selector()
-    compound = tyre_selector()
-    race     = race_inputs()
-    perf     = performance_inputs()
-    mode     = mode_selector()
-    predict  = st.button("GET STRATEGY RECOMMENDATION", type="primary", use_container_width=True)
-
-    payload = {
-        "driver":                       driver,
-        "compound":                     compound,
-        "lap_number":                   race["lap_number"],
-        "position":                     race["position"],
-        "laps_remaining":               race["laps_remaining"],
-        "stint":                        race["stint"],
-        "total_laps":                   race["total_laps"],
-        "tyre_life":                    perf["tyre_life"],
-        "lap_time_delta":               perf["lap_time_delta"],
-        "degradation_from_stint_start": perf["degradation_from_stint_start"],
-        "lap_time_rolling3":            perf["lap_time_rolling3"],
-    }
-    return payload, mode, predict
-
-
-def render_right_panel(payload, mode, predict_clicked):
-    st.markdown('<p class="sec-label">Strategy Output</p>', unsafe_allow_html=True)
-
-    if not predict_clicked:
-        empty_card()
-        return
-
-    try:
-        r = requests.post(f"{API_URL}/predict", json=payload, timeout=10)
-        if r.status_code == 200:
-            rec = r.json()
-            rec["position"] = payload["position"]
-            recommendation_card(rec, mode)
-        else:
-            error_card(f"API error {r.status_code}: {r.text}")
-    except requests.exceptions.ConnectionError:
-        error_card(
-            "Cannot connect to API.<br><br>"
-            "<code style='color:#ff9f43'>uvicorn src.api.main:app --reload --port 8000</code>"
-        )
-    except Exception as e:
-        error_card(f"Error: {str(e)}")
-
-
 def main():
     page_config()
     inject_css()
     render_hero()
 
     st.markdown('<div class="main-wrap">', unsafe_allow_html=True)
-    left, _, right = st.columns([1.1, 0.08, 0.92])
+
+    # Two column layout — inputs left, output right
+    left, gap, right = st.columns([1.05, 0.06, 0.95])
 
     with left:
-        payload, mode, predict_clicked = render_left_panel()
+        # ── Inputs ──────────────────────────────────────────────────
+        driver   = driver_selector()
+        compound = tyre_selector()
+        race     = race_inputs()
+        perf     = performance_inputs()
+        predict  = st.button(
+            "GET STRATEGY RECOMMENDATION",
+            type="primary",
+            use_container_width=True,
+        )
+
+        payload = {
+            "driver":                       driver,
+            "compound":                     compound,
+            "lap_number":                   race["lap_number"],
+            "position":                     race["position"],
+            "laps_remaining":               race["laps_remaining"],
+            "stint":                        race["stint"],
+            "total_laps":                   race["total_laps"],
+            "tyre_life":                    perf["tyre_life"],
+            "lap_time_delta":               perf["lap_time_delta"],
+            "degradation_from_stint_start": perf["degradation_from_stint_start"],
+            "lap_time_rolling3":            perf["lap_time_rolling3"],
+        }
+
     with right:
-        render_right_panel(payload, mode, predict_clicked)
+        # ── Mode selector at top of right panel ─────────────────────
+        st.markdown('<p class="sec-label">Strategy Mode</p>', unsafe_allow_html=True)
+        mode = st.radio(
+            "mode",
+            ["Standard", "Toto Mode", "Ferrari Mode", "Engineer Radio"],
+            horizontal=True,
+            label_visibility="collapsed",
+            key="mode_radio",
+        )
+
+        st.markdown('<p class="sec-label" style="margin-top:1rem">Strategy Output</p>',
+                    unsafe_allow_html=True)
+
+        if not predict:
+            empty_card()
+        else:
+            try:
+                r = requests.post(f"{API_URL}/predict", json=payload, timeout=10)
+                if r.status_code == 200:
+                    rec = r.json()
+                    rec["position"] = payload["position"]
+                    recommendation_card(rec, mode)
+                else:
+                    error_card(f"API error {r.status_code}: {r.text}")
+            except requests.exceptions.ConnectionError:
+                error_card(
+                    "Cannot connect to API. Make sure it is running:<br><br>"
+                    "<code style='color:#ff9f43'>uvicorn src.api.main:app --reload --port 8000</code>"
+                )
+            except Exception as e:
+                error_card(f"Error: {str(e)}")
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("""
