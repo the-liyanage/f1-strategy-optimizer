@@ -24,7 +24,7 @@ MODELS_DIR          = ROOT_DIR / "src" / "models"
 XGBOOST_MODEL_PATH  = MODELS_DIR / "xgboost_pitstop.joblib"
 
 
-MLFLOW_TRACKING_DIR = ROOT_DIR / "mlflow_tracking"
+MLFLOW_TRACKING_DIR = ROOT_DIR / "mlruns"
 
 
 
