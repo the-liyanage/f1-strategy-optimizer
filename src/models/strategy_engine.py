@@ -264,7 +264,7 @@ def generate_reasons(situation: LapSituation, decision: str) -> list:
         # explain why it's still safe to stay out
         if situation.tyre_life < HIGH_TYRE_AGE:
             reasons.append (
-                f"Tyres still younf - only {situation.lap_time_delta:+.2f}s vs previous lap"
+                f"Tyres still young - only {situation.lap_time_delta:+.2f}s vs previous lap"
             )
         
         if situation.lap_time_delta < HIGH_DEGRADATION_DELTA:
