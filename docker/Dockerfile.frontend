@@ -1,0 +1,19 @@
+# step 01: use an official lightweight python image
+FROM python:3.11-slim
+
+# step 02: set the working directory inside the container
+WORKDIR /app
+
+# step 03: Copy requirements and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# step 04: copy the frontend code into the container
+COPY frontend/ /app/frontend/
+
+# step 05: expose streamlit's default port
+EXPOSE 8501
+
+
+# step 06: start the streamlit application
+CMD [ "streamlit", "run", "frontend/app.py", "--server.port=8501", "server.address=0.0.0.0" ]
