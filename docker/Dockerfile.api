@@ -1,0 +1,24 @@
+# step 01: use an official lightweight python image
+FROM python:3.11-slim
+
+# step 02: set the working directory inside the container
+WORKDIR /app
+
+# step 03: copy only the requirements fitst to leverage Docker's caching
+COPY requirements.txt .
+
+# step 04: install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+
+# step 05: copy the necessary source code folders
+COPY src/ /app/src/
+COPY config.py /app/
+COPY mlruns/ /app/mlruns/
+
+# step 06: expose the port FastAPI runs on
+EXPOSE 8000
+
+
+# step 07: command to start your FastAPI server
+CMD [ "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000" ]
