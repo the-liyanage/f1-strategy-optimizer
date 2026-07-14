@@ -1,0 +1,10 @@
+digest: efbd2150
+name: dataset
+profile: '{"features_shape": [9079, 19], "features_size": 172501, "features_nbytes":
+  690004}'
+schema: '{"mlflow_tensorspec": {"features": "[{\"type\": \"tensor\", \"tensor-spec\":
+  {\"dtype\": \"float32\", \"shape\": [-1, 19]}}]", "targets": null}}'
+source: '{"tags": {"mlflow.user": "hiruniliyanage", "mlflow.source.name": "src/models/train_xgboost.py",
+  "mlflow.source.type": "LOCAL", "mlflow.source.git.commit": "16093c64ea165658b236c746836fc318e0b4bac1",
+  "mlflow.source.git.branch": "main", "mlflow.source.git.repoURL": "https://github.com/the-liyanage/f1-strategy-optimizer.git"}}'
+source_type: code

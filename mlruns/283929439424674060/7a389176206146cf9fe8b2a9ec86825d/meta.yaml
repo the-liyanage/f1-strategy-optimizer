@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/hiruniliyanage/Downloads/studio-101/strategy-optimizer/mlflow_tracking/283929439424674060/7a389176206146cf9fe8b2a9ec86825d/artifacts
+end_time: 1784026305380
+entry_point_name: ''
+experiment_id: '283929439424674060'
+lifecycle_stage: active
+run_id: 7a389176206146cf9fe8b2a9ec86825d
+run_name: xgboost_pit_stop_run
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1784026301081
+status: 3
+tags: []
+user_id: hiruniliyanage

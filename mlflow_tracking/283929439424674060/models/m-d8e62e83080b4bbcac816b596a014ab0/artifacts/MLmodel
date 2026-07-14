@@ -1,0 +1,41 @@
+artifact_path: file:///Users/hiruniliyanage/Downloads/studio-101/strategy-optimizer/mlflow_tracking/283929439424674060/models/m-d8e62e83080b4bbcac816b596a014ab0/artifacts
+flavors:
+  python_function:
+    data: model.ubj
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.xgboost
+    python_version: 3.13.0
+  xgboost:
+    code: null
+    data: model.ubj
+    model_class: xgboost.sklearn.XGBClassifier
+    model_format: ubj
+    xgb_version: 3.3.0
+is_signature_from_type_hint: false
+mlflow_version: 3.14.0
+model_id: m-d8e62e83080b4bbcac816b596a014ab0
+model_size_bytes: 845043
+model_uuid: m-d8e62e83080b4bbcac816b596a014ab0
+prompts: null
+run_id: 0aa6f2b992734e699151eafab6321962
+signature:
+  inputs: '[{"type": "double", "name": "Stint", "required": true}, {"type": "double",
+    "name": "Sector1Time", "required": true}, {"type": "double", "name": "Sector2Time",
+    "required": true}, {"type": "double", "name": "Sector3Time", "required": true},
+    {"type": "double", "name": "SpeedI1", "required": true}, {"type": "double", "name":
+    "SpeedI2", "required": true}, {"type": "double", "name": "SpeedFL", "required":
+    true}, {"type": "double", "name": "SpeedST", "required": true}, {"type": "double",
+    "name": "TyreLife", "required": true}, {"type": "boolean", "name": "FreshTyre",
+    "required": true}, {"type": "double", "name": "Position", "required": true}, {"type":
+    "long", "name": "CompoundEncoded", "required": true}, {"type": "double", "name":
+    "LapTimeDelta", "required": true}, {"type": "double", "name": "LapTimeRolling3",
+    "required": true}, {"type": "double", "name": "DegradationFromStintStart", "required":
+    true}, {"type": "double", "name": "TotalLaps", "required": true}, {"type": "double",
+    "name": "RacePctComplete", "required": true}, {"type": "double", "name": "LapsRemaining",
+    "required": true}, {"type": "long", "name": "IsLateRace", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-07-14 10:49:40.606109'

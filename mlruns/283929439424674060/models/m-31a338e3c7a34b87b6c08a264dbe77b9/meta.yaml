@@ -1,0 +1,10 @@
+artifact_location: file:///Users/hiruniliyanage/Downloads/studio-101/strategy-optimizer/mlflow_tracking/283929439424674060/models/m-31a338e3c7a34b87b6c08a264dbe77b9/artifacts
+creation_timestamp: 1784024442607
+experiment_id: '283929439424674060'
+last_updated_timestamp: 1784024446176
+model_id: m-31a338e3c7a34b87b6c08a264dbe77b9
+model_type: null
+name: model
+source_run_id: dad436818d564a2f9aecccce9df8be3d
+status: 2
+status_message: null
