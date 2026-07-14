@@ -10,7 +10,10 @@ set, so the test genuinely measures generalisation to unseen conditions.
 """
 import sys
 from pathlib import Path
+import os
 
+import mlflow
+import mlflow.xgboost
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
@@ -22,10 +25,10 @@ import xgboost as xgb
 from sklearn.metrics import classification_report, roc_auc_score
 
 
-from config import FEATURES_CSV, XGBOOST_MODEL_PATH
+from config import FEATURES_CSV, XGBOOST_MODEL_PATH, MLFLOW_TRACKING_DIR
 from src.logger import get_logger 
 
-
+os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
 
 logger = get_logger(__name__)
 
@@ -44,7 +47,7 @@ EXCLUDE_FROM_FEATURES = [
     "Sector1SessionTime", "Sector2SessionTime", "Sector3SessionTime",
     "LapNumber", "LapTime"
     ]
-
+    
 
 def load_features(path: Path = FEATURES_CSV) -> pd.DataFrame:
     """
@@ -192,6 +195,14 @@ def run_training():
     """
     full training pipeline
     """
+    mlflow.set_tracking_uri(f"file://{MLFLOW_TRACKING_DIR}")
+    mlflow.set_experiment("Pit_Stop_Classifier")
+    
+    # enable automatic logging for scikit-learn compatible models
+    # this automatically tracks model parameters (max_depth, learning_rate etc)
+    mlflow.xgboost.autolog(log_models= True)
+    
+    # prepare data
     df = load_features()
     train_df, test_df  = split_by_race(df)
     feature_cols = get_feature_columns(df)
@@ -201,12 +212,22 @@ def run_training():
     y_test = test_df["Pitted"]
 
 
+    # use an mlflow run context block
+    with mlflow.start_run(run_name="xgboost_pit_stop_run") as run:
+        
+        # train the model (autolog records hyperparameters and creates initial artifacts)
+        model = train_model(X_train, y_train)
+        
+        # compute custom metrics
+        metrics = evaluate_model(model, X_test, y_test)
+        importance = get_feature_importance(model, feature_cols)
+        
+        # explicitly log custom, business-critical metrics
+        mlflow.log_metrics(metrics)
 
-    model = train_model(X_train, y_train)
-    metrics = evaluate_model(model, X_test, y_test)
-    importance = get_feature_importance(model, feature_cols)
-
-    save_models(model)
+        save_models(model)
+        
+        logger.info(f"MLFLOW run successfully tracked! RUN IDL {run.info.run_id}")
     return model, metrics, importance
 
 if __name__ == "__main__":
