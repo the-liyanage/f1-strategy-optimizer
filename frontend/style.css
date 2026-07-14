@@ -125,28 +125,28 @@ div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
 
 /* compound row */
 .compound-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 4px; margin-bottom: 1.2rem; }
-.compound-row.standard { background: rgba(255,255,255,0.06); }
+.compound-row.standard { background: #EA183C; }
 .compound-row.toto     { background: #052e16; }
 .compound-row.ferrari  { background: #360106; }
 .compound-row.radio    { background: #080259; }
 
 .compound-label { font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
-.compound-label.standard { color: #666; }
+.compound-label.standard { color: #d7d4e0 }
 .compound-label.toto     { color: #052e16; }
 .compound-label.ferrari  { color: #360106; }
 .compound-label.radio    { color: #080259; }
 
 .compound-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: #fff; }
 .compound-name-rec { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
-.compound-name-rec.standard { color: #ff6b6b; }
+.compound-name-rec.standard { color: #d7d4e0 }
 .compound-name-rec.toto     { color: var(--green); }
 .compound-name-rec.ferrari  { color: #ff6b6b; }
 .compound-name-rec.radio    { color: var(--purp); }
 
 .compound-arrow { font-size: 1.3rem; }
 .compound-arrow.standard { color: #444; }
-.compound-arrow.toto     { color: #052e16; }
-.compound-arrow.ferrari  { color: #360106; }
+.compound-arrow.toto     { color: #d7d4e0; ; }
+.compound-arrow.ferrari  { color: #d7d4e0; ; }
 .compound-arrow.radio    { color: #d7d4e0; }
 
 /* reasons */
@@ -177,7 +177,7 @@ div[data-testid="stRadio"] input[type="radio"] { display: none !important; }
 .conf-label.ferrari  { color: #360106 }
 .conf-label.radio    { color: #080259; }
 .conf-bar-bg { height: 3px; border-radius: 2px; overflow: hidden; }
-.conf-bar-bg.standard { background: #2a2a2a; }
+.conf-bar-bg.standard { background: var(--black); }
 .conf-bar-bg.toto     { background: #052e16; }
 .conf-bar-bg.ferrari  { background: #360106; }
 .conf-bar-bg.radio    { background: #080259; }
