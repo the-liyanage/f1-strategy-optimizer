@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Service 1: our backend API
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./mlruns:/app/mlruns
+    
+    environment:
+    - MLFLOW_TRACKING_URI=file:///app/mlruns
+
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    
+    ports:
+    - "8501:8501"
+    environment:
+    - BACKEND_API_URL=http://api:8000
+
+    depends_on:
+    - api
+    
+  
