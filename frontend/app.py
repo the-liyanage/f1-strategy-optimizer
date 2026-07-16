@@ -10,7 +10,10 @@ from components.selectors import driver_selector, tyre_selector, mode_selector
 from components.inputs import race_inputs, performance_inputs
 from components.cards import recommendation_card, empty_card, error_card
 
-API_URL = "http://localhost:8000"
+import os
+import streamlit as st
+
+BACKEND_URL = os.getenv("BACKEND_API_URL", "http://localhost:8000")
 
 
 def page_config():
@@ -93,7 +96,7 @@ def main():
             empty_card()
         else:
             try:
-                r = requests.post(f"{API_URL}/predict", json=payload, timeout=10)
+                r = requests.post(f"{BACKEND_URL}/predict", json=payload, timeout=10)
                 if r.status_code == 200:
                     rec = r.json()
                     rec["position"] = payload["position"]
