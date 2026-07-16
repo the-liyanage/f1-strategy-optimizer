@@ -21,6 +21,9 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 
+import os
+import uvicorn
+
 
 # HTTPExeption lets us send proper error responses (400 status code, instead of crashing)
 from fastapi import FastAPI, HTTPException
@@ -233,7 +236,7 @@ def predict(request: PredictRequest):
 
 
 
-# RUN LOCALLY
+
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host = "0.0.0.0", port = 8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("src.api.main:app", host = "0.0.0.0", port = port)
