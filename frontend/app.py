@@ -15,7 +15,9 @@ from components.cards import recommendation_card, empty_card, error_card
 import os
 import streamlit as st
 
-BACKEND_URL = os.getenv("API_URL", "https://f1-strategy.up.railway.app")
+raw_url = os.getenv("API_URL", "http://127.0.0.1:8000")
+clean_url = raw_url.strip().replace('"', '').replace("'", "")
+BACKEND_URL = f"{clean_url}/predict"
 
 
 def page_config():
