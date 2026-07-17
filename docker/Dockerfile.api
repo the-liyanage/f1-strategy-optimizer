@@ -19,6 +19,7 @@ COPY mlruns/ /app/mlruns/
 # step 06: expose the port FastAPI runs on
 EXPOSE 8000
 
+ENV PYTHONPATH=/app
 
 # step 07: command to start your FastAPI server
 CMD [ "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000" ]
