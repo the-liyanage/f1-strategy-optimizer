@@ -15,7 +15,11 @@ from components.cards import recommendation_card, empty_card, error_card
 import os
 import streamlit as st
 
-raw_url = os.getenv("API_URL", "http://127.0.0.1:8000")
+raw_url = os.getenv(
+    "API_URL",
+    "https://f1-strategy-optimizer-production.up.railway.app"
+)
+
 clean_url = raw_url.strip().replace('"', '').replace("'", "")
 BACKEND_URL = clean_url
 
