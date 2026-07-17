@@ -15,7 +15,7 @@ from components.cards import recommendation_card, empty_card, error_card
 import os
 import streamlit as st
 
-BACKEND_URL = os.getenv("https://f1-strategy.up.railway.app")
+BACKEND_URL = os.getenv("API_URL", "https://f1-strategy.up.railway.app")
 
 
 def page_config():
