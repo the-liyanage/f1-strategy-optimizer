@@ -112,10 +112,10 @@ streamlit
 requests
 
 # Core Machine Learning Stack (Safely Pinned to prevent syntax crashes)
-joblib==1.5.3
-numpy==2.4.2
-pandas==2.3.3
-scikit-learn==1.8.0
-scipy==1.17.1
-torch==2.10.0
-xgboost==3.2.0
+joblib==1.4.2
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.1
+scipy==1.13.1
+torch==2.3.1
+xgboost==2.0.3
