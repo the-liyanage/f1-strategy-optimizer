@@ -5,6 +5,8 @@ Run: streamlit run frontend/app.py
 from pathlib import Path
 import requests
 import streamlit as st
+import pandas as pd
+import joblib
 
 from components.selectors import driver_selector, tyre_selector, mode_selector
 from components.inputs import race_inputs, performance_inputs
@@ -119,4 +121,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main() 
