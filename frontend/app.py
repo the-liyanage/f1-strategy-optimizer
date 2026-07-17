@@ -17,7 +17,7 @@ import streamlit as st
 
 raw_url = os.getenv("API_URL", "http://127.0.0.1:8000")
 clean_url = raw_url.strip().replace('"', '').replace("'", "")
-BACKEND_URL = f"{clean_url}/predict"
+BACKEND_URL = clean_url
 
 
 def page_config():
