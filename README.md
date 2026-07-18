@@ -4,6 +4,8 @@ An end-to-end machine learning system that predicts optimal pit stop timing usin
 ## 📌 What is this Project?
 In Formula 1, pit stop timing is one of the most important strategic decisions a team makes during a race. Pit too early and you lose track position. Pit too late and degraded tyres cost seconds every lap.
 
+## 🚀 Live Demo
+https://f1-strategy.up.railway.app/
 
 
 
